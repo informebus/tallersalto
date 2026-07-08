@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>División Ómnibus - Salto</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; color: #333; padding-bottom: 50px; }
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: auto; padding: 15px; }
+        .panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; margin-top: 10px; }
+        .btn-blue { background: var(--accent); } .btn-green { background: var(--success); } .btn-red { background: var(--danger); } .btn-gray { background: #7f8c8d; }
+        .hidden { display: none !important; }
+        .card { border-left: 6px solid var(--accent); padding: 15px; margin-bottom: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
+        .img-preview { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; cursor: pointer; }
+        
+        .visor-fondo { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 9999; overflow: auto; -webkit-overflow-scrolling: touch; display: flex; align-items: center; justify-content: center; }
+        .visor-fondo.zoomed { display: block; }
+        .visor-img { max-width: 100%; max-height: 100vh; cursor: zoom-in; transition: 0.2s ease-in-out; }
+        .visor-img.visor-zoom { max-width: none; max-height: none; width: 300%; display: block; margin: 0; cursor: zoom-out; }
+
+        .btn-map { background: #34495e; margin-top: 10px; font-size: 0.9rem; padding: 12px; display: block; text-decoration: none; text-align: center; border-radius: 6px; color: white; font-weight: bold; }
+        .fecha-pro { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-weight: 900; font-size: 1.4rem; display: block; text-align: center; border: 2px solid #ffeeba; margin-bottom: 12px; }
+        .btn-call { background: #27ae60; display: flex; align-items: center; justify-content: center; text-decoration: none; color: white; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<header><h1>División Ómnibus</h1><small>aplicacion no oficial</small></header>
+
+<div class="container">
+    <div id="seccionLogin" class="panel">
+        <h2 style="text-align:center">Iniciar Sesión</h2>
+        <input type="email" id="loginEmail" placeholder="Correo">
+        <input type="password" id="loginPass" placeholder="Contraseña">
+        <button class="btn-blue" onclick="login()">INGRESAR</button>
+    </div>
+
+    <div id="pantallaBienvenida" class="panel hidden" style="text-align:center">
+        <h3 id="saludoUsuario">funcionario</h3>
+        <button class="btn-blue" onclick="mostrarSeccionPrivada('conductores')">CONDUCTORES</button>
+        <button class="btn-blue" style="background:#8e44ad" onclick="mostrarSeccion('seccionManual')">📚 Manual de nueva boletera electrónica</button>
+        <button class="btn-blue" style="background:#e67e22" onclick="mostrarSeccion('seccionCodigos')">📍 Códigos de destinos</button>
+        <button class="btn-blue" style="background:#2c3e50" onclick="mostrarSeccion('seccionHorarios')">📅 horarios(todos)</button>
+        <button class="btn-blue" onclick="mostrarSeccionPrivada('taller')">Panel de taller</button>
+        <button class="btn-gray" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+    </div>
+
+    <!-- SECCIÓN MANUAL DE BOLETERA (Amigable) -->
+    <div id="seccionManual" class="panel hidden">
+        <h2 style="text-align: center; color: var(--primary);">📚 Manual de Boletera</h2>
+        
+        <div class="card" style="border-left-color: var(--success); background: #f0fdf4;">
+            <h3 style="color: var(--success);">1. Arranque de Turno</h3>
+            <ul style="padding-left: 20px; line-height: 1.5;">
+                <li><b>Login:</b> Presioná la tecla H. Ingresá tu número de funcionario y confirmá con OK.</li>
+                <li><b>PIN:</b> Ingresá el pin que la empresa te brindo.</li>
+                <li><b>Habilitar:</b> Presioná la letra N y luego OK (debe aparecer "datos descargados").</li>
+                <li><b>Inicio:</b> Presioná la letra L (esto emite el ticket de Inicio de Servicio).</li>
+                <li><b>Línea:</b> Presioná la letra C + OK. Elegí tu Nro. de Línea + OK y luego el Nro. de Conexión + OK.</li>
+                <li><b>Pantalla Venta:</b> Para empezar a cobrar, presioná la letra S y luego la tecla Escape.</li>
+            </ul>
+        </div>
+        
+        <div class="card" style="border-left-color: var(--accent); background: #eff6ff;">
+            <h3 style="color: var(--accent);">2. En la calle (Ventas)</h3>
+            <ul style="padding-left: 20px; line-height: 1.5;">
+                <li><b>Boleto Común:</b> Simplemente presioná la tecla OK.</li>
+                <li><b>Boleto Combinación:</b> Presioná la letra M y luego OK.</li>
+                <li><b>Multiventa:</b> Presioná la letra G, escribí la cantidad de boletos, dale OK y luego presioná la letra P (Vender).</li>
+                <li><b>Anular (Máx 3 minutos):</b> Presioná la letra F, escribí el número del boleto a anular y confirmá con OK. (Guardá el ticket erróneo junto al de anulación).</li>
+            </ul>
+        </div>
+        
+        <div class="card" style="border-left-color: var(--warning); background: #fffbeb;">
+            <h3 style="color: var(--warning);">3. Cierres y Controles</h3>
+            <ul style="padding-left: 20px; line-height: 1.5;">
+                <li><b>Llegada a punta:</b> Presioná la letra N.</li>
+                <li><b>Cambiar Conexión:</b> Presioná la letra C.</li>
+                <li><b>Inspección:</b> Presioná la letra T.</li>
+                <li><b>Arqueo:</b> Presioná la letra L.</li>
+                <li><b>Cerrar Viaje:</b> Presioná la letra S.</li>
+                <li><b>LIQUIDAR (Fin de turno):</b> Presioná la letra Q.</li>
+            </ul>
+        </div>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER AL MENÚ</button>
+    </div>
+
+    <!-- SECCIÓN CÓDIGOS DE DESTINOS -->
+    <div id="seccionCodigos" class="panel hidden">
+        <h2>📍 Códigos de Destinos</h2>
+        <div id="contenedorCodigos"></div>
+        <div class="panel" style="background:#e8f8f5">
+            <h3>⚙️ Subir nueva tabla (Administrador)</h3>
+            <input type="file" id="cod-foto" accept="image/*">
+            <button class="btn-green" onclick="actualizarCodigos()">SUBIR TABLA</button>
+        </div>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
+    </div>
+
+    <!-- SECCIÓN HORARIOS -->
+    <div id="seccionHorarios" class="panel hidden">
+        <h2>Horarios Vigentes</h2>
+        <div id="contenedorHorarios"></div>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
+    </div>
+
+    <!-- INFORMACIÓN PÚBLICA (Funciones originales) -->
+    <div id="informacionPublica" class="hidden">
+        <div class="panel" style="border: 3px solid var(--danger); background: #fff5f5;">
+            <h3 style="color: var(--danger);">🆘 REPORTAR COCHE ROTO</h3>
+            <input type="text" id="aux-interno" placeholder="LINEA">
+            <input type="text" id="aux-nombre" placeholder="TURNO">
+            <textarea id="aux-desc" placeholder="¿Describa lo que paso?"></textarea>
+            <input type="file" id="aux-foto" accept="image/*" capture="environment">
+            <button class="btn-red" onclick="enviarEmergencia()">Auxilio mecanico en mi ubicacion</button>
+        </div>
+        <div id="monitorAuxilios"></div>
+        <div class="panel" style="border: 2px solid var(--success);">
+            <h3>📅PLANILLA DE TURNOS </h3>
+            <div id="verPlanillaHoy">Cargando...</div>
+        </div>
+        <div class="panel" style="border-left: 8px solid var(--warning);">
+            <h3>🛠️ PIZARRA DE ANOTACIONES</h3>
+            <div id="monitorTallerPublico">No hay reportes.</div>
+        </div>
+        <div class="panel">
+            <h3>⚠️CORTES Y DESVIOS DE CALLES VIGENTES</h3>
+            <div id="listaCortes"></div>
+        </div>
+        <div class="panel" style="border: 4px solid #2c3e50; min-height: 300px;">
+            <h2 style="background: #2c3e50; color: white; padding: 15px; margin: -20px -20px 20px -20px; border-radius: 10px 10px 0 0; text-align: center;">📢 COMUNICADOS</h2>
+            <div style="background: #fcf3cf; padding: 15px; border-radius: 8px; border: 1px solid #f39c12; margin-bottom: 20px;">
+                <textarea id="com-texto-main" style="height: 120px; font-size: 1.1rem;" placeholder="Escriba aquí el nuevo comunicado para todos..."></textarea>
+                <button class="btn-blue" style="background: #2c3e50;" onclick="publicarComunicado()">PUBLICAR EN LA PIZARRA</button>
+            </div>
+            <div id="listaComunicados"></div>
+        </div>
+        <div class="panel" style="border: 2px solid #27ae60;">
+            <h3>📞 LLAMADAS DE EMERGENCIA</h3>
+            <a href="tel:911" class="btn-call" style="background:#e74c3c">📞 POLICÍA 911</a>
+            <a href="tel:104" class="btn-call" style="background:#f39c12">🔥 BOMBEROS 104</a>
+            <a href="tel:1998" class="btn-call" style="background:#2c3e50">🛡️ SEGURO B.S.E.</a>
+            <a href="tel:47332715" class="btn-call" style="background:#2c3e50">TALLER</a>
+        </div>
+    </div>
+
+    <!-- ACCIONES PRIVADAS (Funciones originales) -->
+    <div id="sec-acciones" class="hidden">
+        <div id="menuConductores" class="hidden">
+            <div class="panel">
+                <h3>🛠️ SOLICITAR REPARACION A EL TALLER</h3>
+                <input type="text" id="t-interno" placeholder="COCHE">
+                <textarea id="t-desc" placeholder="DESCRIBA"></textarea>
+                <input type="file" id="t-foto" accept="image/*" capture="environment">
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-blue" onclick="enviarConFoto('tareas', null, false)" style="flex:1">REPORTE NORMAL</button>
+                    <button class="btn-red" onclick="enviarConFoto('tareas', null, true)" style="flex:1">📍 CON GPS</button>
+                </div>
+            </div>
+            <div class="panel" style="border: 2px solid var(--warning);">
+                <h3>🚧INFORMAR CORTE DE CALLE PARA TODOS</h3>
+                <textarea id="c-desc" placeholder="Lugar"></textarea>
+                <input type="file" id="c-foto" accept="image/*" capture="environment">
+                <button class="btn-blue" onclick="enviarConFoto('cortes', null, true)">PUBLICAR CON IMAGEN DE MAPA</button>
+            </div>
+            <div class="panel">
+                <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA</h3>
+                <input type="file" id="p-foto-cond" accept="image/*" capture="environment">
+                <button class="btn-green" onclick="enviarConFoto('planillas', 'p-foto-cond')">SUBIR FOTO</button>
+            </div>
+        </div>
+        <div id="menuTaller" class="hidden">
+            <div class="panel" style="background:#e8f8f5">
+                <h3>⚙️ Administrar Horarios</h3>
+                <input type="text" id="h-titulo" placeholder="Título">
+                <input type="file" id="h-foto" accept="image/*">
+                <button class="btn-green" onclick="actualizarHorario()">SUBIR HORARIO</button>
+            </div>
+            <h3>🔧 PIZARRON PARA EL TALLER</h3>
+            <div id="tareasTaller"></div>
+        </div>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER AL MENÚ</button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyCO2ngrIv3QRdyxgk9USv4sa0b2nPlF8Fw", databaseURL: "https://taller-salto-default-rtdb.firebaseio.com/", projectId: "taller-salto" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(); const auth = firebase.auth();
+    const { Geolocation } = (typeof Capacitor !== 'undefined') ? Capacitor.Plugins : { Geolocation: null };
+
+    // --- FUNCIONES DE VISOR Y CÓDIGOS ---
+    function abrirVisor(src) {
+        const fondo = document.createElement('div'); fondo.className = 'visor-fondo';
+        const img = document.createElement('img'); img.src = src; img.className = 'visor-img';
+        img.onclick = function(e) { e.stopPropagation(); img.classList.toggle('visor-zoom'); fondo.classList.toggle('zoomed'); };
+        fondo.onclick = function() { fondo.remove(); };
+        fondo.appendChild(img); document.body.appendChild(fondo);
+    }
+
+    async function actualizarCodigos() {
+        const f = document.getElementById('cod-foto').files[0];
+        if(!f) return alert("Seleccione una foto");
+        db.ref('codigos').set({ foto: await comprimirImagen(f) });
+        alert("Subido");
+    }
+
+    db.ref('codigos').on('value', s => {
+        const d = s.val(); const div = document.getElementById('contenedorCodigos');
+        div.innerHTML = d ? `<img src="${d.foto}" class="img-preview" onclick="abrirVisor(this.src)">` : "Sin tabla cargada.";
+    });
+
+    // --- RESTO DE FUNCIONES ---
+    async function obtenerCoordenadas() {
+        if (!Geolocation) return null;
+        try {
+            await Geolocation.requestPermissions();
+            const c = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 6000 });
+            return `https://www.google.com/maps?q=${c.coords.latitude},${c.coords.longitude}`;
+        } catch (e) { return null; }
+    }
+
+    function login() { 
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+        auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Error: " + e.message)); 
+    }
+    function cerrarSesion() { auth.signOut().then(() => location.reload()); }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('seccionLogin').classList.add('hidden');
+            document.getElementById('pantallaBienvenida').classList.remove('hidden');
+            document.getElementById('informacionPublica').classList.remove('hidden');
+            document.getElementById('saludoUsuario').innerText = "Hola, " + user.email;
+        } else { document.getElementById('seccionLogin').classList.remove('hidden'); }
+    });
+
+    function mostrarSeccion(id) {
+        ['seccionLogin','pantallaBienvenida','seccionHorarios','seccionManual','seccionCodigos','sec-acciones','informacionPublica'].forEach(s => document.getElementById(s)?.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        if(id === 'pantallaBienvenida') document.getElementById('informacionPublica').classList.remove('hidden');
+    }
+
+    function mostrarSeccionPrivada(rol) {
+        mostrarSeccion('sec-acciones');
+        document.getElementById('menuConductores').classList.add('hidden');
+        document.getElementById('menuTaller').classList.add('hidden');
+        if(rol === 'taller') {
+            if(prompt("Clave Taller:") !== "0987") return mostrarSeccion('pantallaBienvenida');
+            document.getElementById('menuTaller').classList.remove('hidden');
+        } else { document.getElementById('menuConductores').classList.remove('hidden'); }
+    }
+
+    async function comprimirImagen(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas'); const MAX = 1200;
+                    let w = img.width; let h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+            };
+        });
+    }
+
+    function publicarComunicado() {
+        const txt = document.getElementById('com-texto-main').value;
+        const user = auth.currentUser;
+        if(!txt) return alert("Escriba un mensaje");
+        db.ref('comunicados').push({
+            mensaje: txt,
+            autor: user ? user.email : "Desconocido",
+            fecha: new Date().toLocaleDateString(),
+            hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        });
+        document.getElementById('com-texto-main').value = "";
+        alert("Publicado en la pizarra");
+    }
+
+    db.ref('comunicados').on('value', s => {
+        const d = s.val(); const div = document.getElementById('listaComunicados'); div.innerHTML = "";
+        if(!d) { div.innerHTML = "<p style='text-align:center; color:gray;'>No hay comunicados activos.</p>"; return; }
+        const keys = Object.keys(d).reverse();
+        keys.forEach(id => {
+            div.innerHTML += `
+            <div style="border: 2px solid #eee; border-left: 8px solid #2c3e50; padding: 15px; margin-bottom: 15px; background: #fff; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;">
+                    <b style="font-size: 0.8rem; color: #2c3e50;">👤 ${d[id].autor}</b>
+                    <small style="color: #666;">${d[id].fecha} - ${d[id].hora}</small>
+                </div>
+                <p style="font-size: 1.2rem; color: black; font-weight: bold; margin: 0; line-height: 1.4;">${d[id].mensaje}</p>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button style="width: auto; padding: 5px 10px; background: none; color: red; font-size: 0.8rem;" onclick="if(prompt('Clave de borrado:')=='6677') db.ref('comunicados/${id}').remove()">[Borrar x]</button>
+                </div>
+            </div>`;
+        });
+    });
+
+    async function enviarEmergencia() {
+        const int = document.getElementById('aux-interno').value;
+        const nom = document.getElementById('aux-nombre').value;
+        const desc = document.getElementById('aux-desc').value;
+        const file = document.getElementById('aux-foto').files[0];
+        if(!int || !nom || !desc) return alert("Faltan datos");
+        alert("Buscando GPS...");
+        let gps = await obtenerCoordenadas();
+        let foto = file ? await comprimirImagen(file) : null;
+        db.ref('auxilios').push({ interno: int, conductor: nom, desc: desc, mapa: gps, foto: foto, fecha: new Date().toLocaleString() });
+        alert("REPORTADO"); location.reload();
+    }
+
+    async function enviarConFoto(nodo, customID, usarGPS = true) {
+        const user = auth.currentUser;
+        let datos = { autor: user.email, fecha: new Date().toLocaleString() };
+        let fID = customID || (nodo==='tareas' ? 't-foto' : 'c-foto');
+        let file = document.getElementById(fID).files[0];
+        if(usarGPS) { alert("Buscando GPS..."); datos.mapa = await obtenerCoordenadas(); }
+        if(nodo === 'tareas') { datos.interno = document.getElementById('t-interno').value; datos.desc = document.getElementById('t-desc').value; datos.estado = 'Pendiente'; }
+        else if(nodo === 'cortes') { datos.desc = document.getElementById('c-desc').value; }
+        if(file) datos.foto = await comprimirImagen(file);
+        if(nodo === 'planillas') db.ref(nodo).set(datos); else db.ref(nodo).push(datos);
+        alert("Éxito"); location.reload();
+    }
+
+    async function actualizarHorario() {
+        const t = document.getElementById('h-titulo').value; const f = document.getElementById('h-foto').files[0];
+        if(!t || !f) return alert("Faltan datos");
+        db.ref('horarios').push({ titulo: t, foto: await comprimirImagen(f) });
+        alert("Subido");
+    }
+
+    db.ref('auxilios').on('value', s => {
+        const d = s.val(); const div = document.getElementById('monitorAuxilios'); div.innerHTML = "";
+        for(let id in d) {
+            div.innerHTML += `<div class="card" style="border-left-color:red; background:#fff0f0">
+                <b style="color:red; font-size:1.2rem">🆘 AUXILIO: COCHE ${d[id].interno}</b><br>
+                <b>Conductor:</b> ${d[id].conductor}<br><p>${d[id].desc}</p>
+                ${d[id].mapa ? `<a href="${d[id].mapa}" target="_blank" class="btn-map" style="background:red">📍 UBICACIÓN</a>` : ''}
+                ${d[id].foto ? `<img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)">` : ''}
+                <br><small>${d[id].fecha}</small>
+            </div>`;
+        }
+    });
+
+    db.ref('horarios').on('value', s => {
+        const d = s.val(); const div = document.getElementById('contenedorHorarios'); div.innerHTML = "";
+        for(let id in d) div.innerHTML += `<div class="card"><b>${d[id].titulo}</b><img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)"><button class="btn-red" onclick="if(prompt('Clave:')=='0987') db.ref('horarios/${id}').remove()">BORRAR</button></div>`;
+    });
+
+    db.ref('cortes').on('value', s => {
+        const d = s.val(); const div = document.getElementById('listaCortes'); div.innerHTML = "";
+        for(let id in d) div.innerHTML += `<div class="card" style="border-left-color:var(--warning)">
+            <span class="fecha-pro">📅 ${d[id].fecha}</span>
+            <p style="font-size:1.1rem"><b>Detalle:</b> ${d[id].desc}</p>
+            ${d[id].mapa ? `<a href="${d[id].mapa}" target="_blank" class="btn-map">📍 VER MAPA</a>` : ''}
+            ${d[id].foto ? `<img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)">` : ''}
+            <button style="color:red; background:none; border:none; margin-top:15px" onclick="if(prompt('Clave:')=='6677') db.ref('cortes/${id}').remove()">Borrar reporte x</button>
+        </div>`;
+    });
+
+    db.ref('tareas').on('value', s => {
+        const d = s.val(); const mon = document.getElementById('monitorTallerPublico'); const tall = document.getElementById('tareasTaller'); mon.innerHTML = ""; tall.innerHTML = "";
+        for(let id in d) {
+            const t = d[id];
+            if(t.estado !== 'Listo') mon.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee;">Coche ${t.interno}: ${t.desc}</div>`;
+            tall.innerHTML += `<div class="card"><b>Coche ${t.interno}</b>: ${t.desc} ${t.foto ? `<img src="${t.foto}" class="img-preview" onclick="abrirVisor(this.src)">` : ''} <button class="btn-green" onclick="db.ref('tareas/${id}').update({estado:'Listo'})">LISTO</button> <button class="btn-red" onclick="if(prompt('Clave:')=='0987') db.ref('tareas/${id}').remove()">BORRAR</button></div>`;
+        }
+        db.ref('auxilios').once('value', sax => {
+            const dax = sax.val();
+            for(let id in dax) tall.innerHTML += `<div class="card" style="border-left: 10px solid red;"><b>🆘 AUXILIO COCHE ${dax[id].interno}</b><p>${dax[id].desc}</p><button class="btn-red" onclick="db.ref('auxilios/${id}').remove()">FINALIZAR AUXILIO</button></div>`;
+        });
+    });
+
+    db.ref('planillas').on('value', s => { const d = s.val(); document.getElementById('verPlanillaHoy').innerHTML = d ? `<img src="${d.foto}" class="img-preview" onclick="abrirVisor(this.src)">` : "Sin planilla"; });
+</script>
+</body>
+</html>
