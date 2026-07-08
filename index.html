@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>División Ómnibus - Salto</title>
+    
+    <!-- Etiquetas para iPhone (iOS) -->
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="División Ómnibus">
+
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -52,41 +59,38 @@
         <button class="btn-gray" onclick="cerrarSesion()">CERRAR SESIÓN</button>
     </div>
 
-    <!-- SECCIÓN MANUAL DE BOLETERA (Amigable) -->
+    <!-- SECCIÓN MANUAL DE BOLETERA -->
     <div id="seccionManual" class="panel hidden">
         <h2 style="text-align: center; color: var(--primary);">📚 Manual de Boletera</h2>
-        
         <div class="card" style="border-left-color: var(--success); background: #f0fdf4;">
             <h3 style="color: var(--success);">1. Arranque de Turno</h3>
             <ul style="padding-left: 20px; line-height: 1.5;">
                 <li><b>Login:</b> Presioná la tecla H. Ingresá tu número de funcionario y confirmá con OK.</li>
-                <li><b>PIN:</b> Ingresá el pin que la empresa te brindo.</li>
-                <li><b>Habilitar:</b> Presioná la letra N y luego OK (debe aparecer "datos descargados").</li>
-                <li><b>Inicio:</b> Presioná la letra L (esto emite el ticket de Inicio de Servicio).</li>
-                <li><b>Línea:</b> Presioná la letra C + OK. Elegí tu Nro. de Línea + OK y luego el Nro. de Conexión + OK.</li>
-                <li><b>Pantalla Venta:</b> Para empezar a cobrar, presioná la letra S y luego la tecla Escape.</li>
+                <li><b>PIN:</b> Ingresá 1234.</li>
+                <li><b>Habilitar:</b> Presioná la letra N y luego OK ("datos descargados").</li>
+                <li><b>Inicio:</b> Presioná la letra L (emite ticket inicio).</li>
+                <li><b>Línea:</b> Presioná la letra C + OK. Nro Línea + OK + Nro Conexión + OK.</li>
+                <li><b>Pantalla Venta:</b> Letra S + Escape.</li>
             </ul>
         </div>
-        
         <div class="card" style="border-left-color: var(--accent); background: #eff6ff;">
-            <h3 style="color: var(--accent);">2. En la calle (Ventas)</h3>
+            <h3 style="color: var(--accent);">2. Ventas</h3>
             <ul style="padding-left: 20px; line-height: 1.5;">
-                <li><b>Boleto Común:</b> Simplemente presioná la tecla OK.</li>
-                <li><b>Boleto Combinación:</b> Presioná la letra M y luego OK.</li>
-                <li><b>Multiventa:</b> Presioná la letra G, escribí la cantidad de boletos, dale OK y luego presioná la letra P (Vender).</li>
-                <li><b>Anular (Máx 3 minutos):</b> Presioná la letra F, escribí el número del boleto a anular y confirmá con OK. (Guardá el ticket erróneo junto al de anulación).</li>
+                <li><b>Común:</b> Presionar OK.</li>
+                <li><b>Combinación:</b> Letra M + OK.</li>
+                <li><b>Multiventa:</b> Letra G + Cantidad + OK + P (Vender).</li>
+                <li><b>Anular (Máx 3 min):</b> Letra F + Nro Boleto + OK.</li>
             </ul>
         </div>
-        
         <div class="card" style="border-left-color: var(--warning); background: #fffbeb;">
             <h3 style="color: var(--warning);">3. Cierres y Controles</h3>
             <ul style="padding-left: 20px; line-height: 1.5;">
-                <li><b>Llegada a punta:</b> Presioná la letra N.</li>
-                <li><b>Cambiar Conexión:</b> Presioná la letra C.</li>
-                <li><b>Inspección:</b> Presioná la letra T.</li>
-                <li><b>Arqueo:</b> Presioná la letra L.</li>
-                <li><b>Cerrar Viaje:</b> Presioná la letra S.</li>
-                <li><b>LIQUIDAR (Fin de turno):</b> Presioná la letra Q.</li>
+                <li><b>Pasada/Llegada:</b> Letra N.</li>
+                <li><b>Cambiar Conexión:</b> Letra C.</li>
+                <li><b>Inspección:</b> Letra T.</li>
+                <li><b>Arqueo:</b> Letra L.</li>
+                <li><b>Cerrar Viaje:</b> Letra S.</li>
+                <li><b>LIQUIDAR (Fin de turno):</b> Letra Q.</li>
             </ul>
         </div>
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER AL MENÚ</button>
@@ -104,14 +108,12 @@
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
     </div>
 
-    <!-- SECCIÓN HORARIOS -->
     <div id="seccionHorarios" class="panel hidden">
         <h2>Horarios Vigentes</h2>
         <div id="contenedorHorarios"></div>
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
     </div>
 
-    <!-- INFORMACIÓN PÚBLICA (Funciones originales) -->
     <div id="informacionPublica" class="hidden">
         <div class="panel" style="border: 3px solid var(--danger); background: #fff5f5;">
             <h3 style="color: var(--danger);">🆘 REPORTAR COCHE ROTO</h3>
@@ -151,7 +153,6 @@
         </div>
     </div>
 
-    <!-- ACCIONES PRIVADAS (Funciones originales) -->
     <div id="sec-acciones" class="hidden">
         <div id="menuConductores" class="hidden">
             <div class="panel">
@@ -196,7 +197,7 @@
     const db = firebase.database(); const auth = firebase.auth();
     const { Geolocation } = (typeof Capacitor !== 'undefined') ? Capacitor.Plugins : { Geolocation: null };
 
-    // --- FUNCIONES DE VISOR Y CÓDIGOS ---
+    // --- FUNCIONES ---
     function abrirVisor(src) {
         const fondo = document.createElement('div'); fondo.className = 'visor-fondo';
         const img = document.createElement('img'); img.src = src; img.className = 'visor-img';
@@ -217,7 +218,6 @@
         div.innerHTML = d ? `<img src="${d.foto}" class="img-preview" onclick="abrirVisor(this.src)">` : "Sin tabla cargada.";
     });
 
-    // --- RESTO DE FUNCIONES ---
     async function obtenerCoordenadas() {
         if (!Geolocation) return null;
         try {
