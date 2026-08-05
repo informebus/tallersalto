@@ -182,12 +182,27 @@
                 <input type="file" id="c-foto" accept="image/*" capture="environment">
                 <button class="btn-blue" onclick="enviarConFoto('cortes', null, true)">PUBLICAR CON IMAGEN DE MAPA</button>
             </div>
+            
+            <!-- PANEL DE PLANILLA ACTUALIZADO -->
             <div class="panel">
                 <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA</h3>
-                <!-- Aquí está la modificación solicitada: se quitó capture="environment" -->
-                <input type="file" id="p-foto-cond" accept="image/*">
-                <button class="btn-green" onclick="enviarConFoto('planillas', 'p-foto-cond')">SUBIR FOTO</button>
+                <p style="text-align: center; font-size: 14px; color: #555;">Elija una opción bien clara para subir la foto:</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex: 1; background: #e8f8f5; padding: 15px; border-radius: 8px; border: 2px dashed #27ae60; text-align: center;">
+                        <b style="color: #27ae60; display: block; margin-bottom: 8px;">📷 USAR CÁMARA AHORA</b>
+                        <!-- capture="environment" fuerza abrir la cámara directamente -->
+                        <input type="file" id="p-foto-cam" accept="image/*" capture="environment" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-gal').value=''">
+                    </div>
+                    <div style="flex: 1; background: #ebf5fb; padding: 15px; border-radius: 8px; border: 2px dashed #3498db; text-align: center;">
+                        <b style="color: #3498db; display: block; margin-bottom: 8px;">🖼️ BUSCAR EN GALERÍA</b>
+                        <!-- Sin capture, fuerza a buscar en los archivos/galería en la mayoría de los dispositivos -->
+                        <input type="file" id="p-foto-gal" accept="image/*" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-cam').value=''">
+                    </div>
+                </div>
+                <button class="btn-green" onclick="enviarPlanillaDoble()">✅ SUBIR PLANILLA SELECCIONADA</button>
             </div>
+            <!-- FIN PANEL PLANILLA -->
+
         </div>
         <div id="menuTaller" class="hidden">
             <div class="panel" style="background:#e8f8f5">
@@ -345,6 +360,20 @@
         if(file) datos.foto = await comprimirImagen(file);
         if(nodo === 'planillas') db.ref(nodo).set(datos); else db.ref(nodo).push(datos);
         alert("Éxito"); location.reload();
+    }
+
+    // NUEVA FUNCIÓN PARA DETECTAR DE DÓNDE VIENE LA FOTO DE LA PLANILLA
+    function enviarPlanillaDoble() {
+        const fileCam = document.getElementById('p-foto-cam').files[0];
+        const fileGal = document.getElementById('p-foto-gal').files[0];
+
+        if (fileCam) {
+            enviarConFoto('planillas', 'p-foto-cam', true);
+        } else if (fileGal) {
+            enviarConFoto('planillas', 'p-foto-gal', true);
+        } else {
+            alert("Por favor, utilice uno de los botones para tomar o seleccionar la foto de la planilla primero.");
+        }
     }
 
     async function actualizarHorario() {
