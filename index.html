@@ -119,8 +119,9 @@
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
     </div>
 
+    <!-- SECCIÓN HORARIOS ACTUALIZADA -->
     <div id="seccionHorarios" class="panel hidden">
-        <h2>Horarios Vigentes</h2>
+        <h2 style="text-align: center; color: var(--primary);">Horarios Vigentes</h2>
         <div id="contenedorHorarios"></div>
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
     </div>
@@ -183,33 +184,29 @@
                 <button class="btn-blue" onclick="enviarConFoto('cortes', null, true)">PUBLICAR CON IMAGEN DE MAPA</button>
             </div>
             
-            <!-- PANEL DE PLANILLA ACTUALIZADO -->
             <div class="panel">
                 <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA</h3>
                 <p style="text-align: center; font-size: 14px; color: #555;">Elija una opción bien clara para subir la foto:</p>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1; background: #e8f8f5; padding: 15px; border-radius: 8px; border: 2px dashed #27ae60; text-align: center;">
                         <b style="color: #27ae60; display: block; margin-bottom: 8px;">📷 USAR CÁMARA AHORA</b>
-                        <!-- capture="environment" fuerza abrir la cámara directamente -->
                         <input type="file" id="p-foto-cam" accept="image/*" capture="environment" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-gal').value=''">
                     </div>
                     <div style="flex: 1; background: #ebf5fb; padding: 15px; border-radius: 8px; border: 2px dashed #3498db; text-align: center;">
                         <b style="color: #3498db; display: block; margin-bottom: 8px;">🖼️ BUSCAR EN GALERÍA</b>
-                        <!-- Sin capture, fuerza a buscar en los archivos/galería en la mayoría de los dispositivos -->
                         <input type="file" id="p-foto-gal" accept="image/*" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-cam').value=''">
                     </div>
                 </div>
                 <button class="btn-green" onclick="enviarPlanillaDoble()">✅ SUBIR PLANILLA SELECCIONADA</button>
             </div>
-            <!-- FIN PANEL PLANILLA -->
 
         </div>
         <div id="menuTaller" class="hidden">
             <div class="panel" style="background:#e8f8f5">
-                <h3>⚙️ Administrar Horarios</h3>
-                <input type="text" id="h-titulo" placeholder="Título">
+                <h3>⚙️ Administrar Horarios (Crear nueva línea)</h3>
+                <input type="text" id="h-titulo" placeholder="Título (Ej: Línea 1)">
                 <input type="file" id="h-foto" accept="image/*">
-                <button class="btn-green" onclick="actualizarHorario()">SUBIR HORARIO</button>
+                <button class="btn-green" onclick="actualizarHorario()">SUBIR NUEVA LÍNEA</button>
             </div>
             <h3>🔧 PIZARRON PARA EL TALLER</h3>
             <div id="tareasTaller"></div>
@@ -362,7 +359,6 @@
         alert("Éxito"); location.reload();
     }
 
-    // NUEVA FUNCIÓN PARA DETECTAR DE DÓNDE VIENE LA FOTO DE LA PLANILLA
     function enviarPlanillaDoble() {
         const fileCam = document.getElementById('p-foto-cam').files[0];
         const fileGal = document.getElementById('p-foto-gal').files[0];
@@ -380,7 +376,20 @@
         const t = document.getElementById('h-titulo').value; const f = document.getElementById('h-foto').files[0];
         if(!t || !f) return alert("Faltan datos");
         db.ref('horarios').push({ titulo: t, foto: await comprimirImagen(f) });
-        alert("Subido");
+        alert("Línea creada exitosamente");
+    }
+
+    // NUEVA FUNCIÓN: Actualiza SOLO LA FOTO de un horario que ya existe
+    async function actualizarFotoFija(id) {
+        const file = document.getElementById(`h-file-${id}`).files[0];
+        if(!file) return alert("Primero debe seleccionar una nueva foto desde su dispositivo.");
+        if(prompt("Ingrese la clave para modificar el horario:") !== "0987") return alert("Acceso denegado o cancelado.");
+        
+        alert("Comprimiendo y actualizando... espere un momento.");
+        let nuevaFoto = await comprimirImagen(file);
+        // Usamos .update() para modificar solo la foto, sin tocar el título ni borrar la línea
+        db.ref(`horarios/${id}`).update({ foto: nuevaFoto });
+        alert("¡Horario actualizado con éxito!");
     }
 
     db.ref('auxilios').on('value', s => {
@@ -396,9 +405,22 @@
         }
     });
 
+    // RENDERIZADO DE HORARIOS MODIFICADO (Sin botón borrar, con opción de cambiar foto)
     db.ref('horarios').on('value', s => {
         const d = s.val(); const div = document.getElementById('contenedorHorarios'); div.innerHTML = "";
-        for(let id in d) div.innerHTML += `<div class="card"><b>${d[id].titulo}</b><img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)"><button class="btn-red" onclick="if(prompt('Clave:')=='0987') db.ref('horarios/${id}').remove()">BORRAR</button></div>`;
+        for(let id in d) {
+            div.innerHTML += `
+            <div class="card" style="border-left: 6px solid #2c3e50;">
+                <b style="font-size: 1.3rem; color: #2c3e50;">${d[id].titulo}</b>
+                <img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)">
+                
+                <div style="margin-top: 15px; background: #f9f9f9; padding: 12px; border-radius: 8px; border: 1px dashed #ccc;">
+                    <span style="font-size: 0.85rem; font-weight: bold; color: #666; display:block; margin-bottom: 8px;">⚙️ ACTUALIZAR FOTO (Requiere Clave)</span>
+                    <input type="file" id="h-file-${id}" accept="image/*" style="font-size: 14px; width: 100%; box-sizing: border-box;">
+                    <button class="btn-blue" style="margin-top: 10px; background: #34495e;" onclick="actualizarFotoFija('${id}')">🔄 CAMBIAR FOTO</button>
+                </div>
+            </div>`;
+        }
     });
 
     db.ref('cortes').on('value', s => {
