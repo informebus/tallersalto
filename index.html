@@ -46,6 +46,14 @@
         .btn-map { background: #34495e; margin-top: 10px; font-size: 0.9rem; padding: 12px; display: block; text-decoration: none; text-align: center; border-radius: 6px; color: white; font-weight: bold; }
         .fecha-pro { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-weight: 900; font-size: 1.4rem; display: block; text-align: center; border: 2px solid #ffeeba; margin-bottom: 12px; }
         .btn-call { background: #27ae60; display: flex; align-items: center; justify-content: center; text-decoration: none; color: white; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; }
+
+        /* Estilos nuevos para el Directorio y Perfil */
+        .avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 10px; background: #eee; }
+        .directorio-card { display: flex; align-items: flex-start; gap: 15px; border-left: 6px solid #8e44ad; padding: 15px; margin-bottom: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .directorio-info { flex: 1; font-size: 0.95rem; line-height: 1.4; }
+        .directorio-info p { margin: 4px 0; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
+        .directorio-info p:last-child { border-bottom: none; }
+        .label-perfil { font-size: 0.85rem; color: #666; font-weight: bold; margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -67,7 +75,14 @@
         <button class="btn-blue" style="background:#e67e22" onclick="mostrarSeccion('seccionCodigos')">📍 Códigos de destinos</button>
         <button class="btn-blue" style="background:#2c3e50" onclick="mostrarSeccion('seccionHorarios')">📅 horarios(todos)</button>
         <button class="btn-blue" onclick="mostrarSeccionPrivada('taller')">Panel de taller</button>
-        <button class="btn-gray" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+        
+        <hr style="margin: 25px 0; border: 0; border-top: 2px dashed #ccc;">
+        
+        <!-- NUEVOS BOTONES DE PERFIL Y DIRECTORIO -->
+        <button class="btn-blue" style="background:#2980b9" onclick="abrirMiPerfil()">👤 MI PERFIL</button>
+        <button class="btn-blue" style="background:#8e44ad" onclick="mostrarSeccion('seccionDirectorio')">👥 DIRECTORIO COMPAÑEROS</button>
+        
+        <button class="btn-gray" onclick="cerrarSesion()" style="margin-top: 20px;">CERRAR SESIÓN</button>
     </div>
 
     <!-- SECCIÓN MANUAL DE BOLETERA -->
@@ -123,6 +138,42 @@
         <h2>Horarios Vigentes</h2>
         <div id="contenedorHorarios"></div>
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER</button>
+    </div>
+
+    <!-- NUEVA SECCIÓN: MI PERFIL -->
+    <div id="seccionMiPerfil" class="panel hidden">
+        <h2 style="text-align: center; color: var(--primary);">👤 Mi Perfil</h2>
+        <p style="text-align: center; font-size: 0.9rem; color: #666;">Completa tus datos. Serán visibles para tus compañeros en el Directorio.</p>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img id="perfil-preview" src="https://via.placeholder.com/150?text=SIN+FOTO" class="avatar" style="width: 120px; height: 120px;" onclick="abrirVisor(this.src)">
+            <label class="label-perfil">Subir / Cambiar Foto Carnet</label>
+            <input type="file" id="perfil-foto" accept="image/*" style="font-size: 14px;">
+        </div>
+
+        <input type="text" id="perfil-nombre" placeholder="Nombre">
+        <input type="text" id="perfil-apellido" placeholder="Apellido">
+        <input type="number" id="perfil-funcionario" placeholder="Número de Funcionario">
+        <input type="tel" id="perfil-tel" placeholder="Tu Celular (Ej: 099123456)">
+        <input type="tel" id="perfil-emergencia" placeholder="Teléfono de Emergencia (Familiar)">
+        <input type="text" id="perfil-domicilio" placeholder="Dirección / Domicilio">
+        <input type="text" id="perfil-salud" placeholder="Prestador de Salud (Ej: Asistencial, CAM)">
+        
+        <label class="label-perfil">Vencimiento Libreta de Conducir:</label>
+        <input type="date" id="perfil-venc-libreta">
+        
+        <label class="label-perfil">Vencimiento Carnet de Salud:</label>
+        <input type="date" id="perfil-venc-salud">
+        
+        <button class="btn-green" id="btn-guardar-perfil" onclick="guardarPerfil()">💾 GUARDAR MIS DATOS</button>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER AL MENÚ</button>
+    </div>
+
+    <!-- NUEVA SECCIÓN: DIRECTORIO -->
+    <div id="seccionDirectorio" class="panel hidden">
+        <h2 style="text-align: center; color: #8e44ad;">👥 Directorio de Compañeros</h2>
+        <div id="contenedorDirectorio">Cargando directorio...</div>
+        <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">VOLVER AL MENÚ</button>
     </div>
 
     <div id="informacionPublica" class="hidden">
@@ -183,25 +234,21 @@
                 <button class="btn-blue" onclick="enviarConFoto('cortes', null, true)">PUBLICAR CON IMAGEN DE MAPA</button>
             </div>
             
-            <!-- PANEL DE PLANILLA ACTUALIZADO -->
             <div class="panel">
                 <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA</h3>
                 <p style="text-align: center; font-size: 14px; color: #555;">Elija una opción bien clara para subir la foto:</p>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1; background: #e8f8f5; padding: 15px; border-radius: 8px; border: 2px dashed #27ae60; text-align: center;">
                         <b style="color: #27ae60; display: block; margin-bottom: 8px;">📷 USAR CÁMARA AHORA</b>
-                        <!-- capture="environment" fuerza abrir la cámara directamente -->
                         <input type="file" id="p-foto-cam" accept="image/*" capture="environment" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-gal').value=''">
                     </div>
                     <div style="flex: 1; background: #ebf5fb; padding: 15px; border-radius: 8px; border: 2px dashed #3498db; text-align: center;">
                         <b style="color: #3498db; display: block; margin-bottom: 8px;">🖼️ BUSCAR EN GALERÍA</b>
-                        <!-- Sin capture, fuerza a buscar en los archivos/galería en la mayoría de los dispositivos -->
                         <input type="file" id="p-foto-gal" accept="image/*" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-cam').value=''">
                     </div>
                 </div>
                 <button class="btn-green" onclick="enviarPlanillaDoble()">✅ SUBIR PLANILLA SELECCIONADA</button>
             </div>
-            <!-- FIN PANEL PLANILLA -->
 
         </div>
         <div id="menuTaller" class="hidden">
@@ -270,8 +317,9 @@
         } else { document.getElementById('seccionLogin').classList.remove('hidden'); }
     });
 
+    // ACTUALIZADO: Añadidas las dos nuevas secciones al array para que se oculten correctamente
     function mostrarSeccion(id) {
-        ['seccionLogin','pantallaBienvenida','seccionHorarios','seccionManual','seccionCodigos','sec-acciones','informacionPublica'].forEach(s => document.getElementById(s)?.classList.add('hidden'));
+        ['seccionLogin','pantallaBienvenida','seccionHorarios','seccionManual','seccionCodigos','sec-acciones','informacionPublica', 'seccionMiPerfil', 'seccionDirectorio'].forEach(s => document.getElementById(s)?.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
         if(id === 'pantallaBienvenida') document.getElementById('informacionPublica').classList.remove('hidden');
     }
@@ -362,7 +410,6 @@
         alert("Éxito"); location.reload();
     }
 
-    // NUEVA FUNCIÓN PARA DETECTAR DE DÓNDE VIENE LA FOTO DE LA PLANILLA
     function enviarPlanillaDoble() {
         const fileCam = document.getElementById('p-foto-cam').files[0];
         const fileGal = document.getElementById('p-foto-gal').files[0];
@@ -382,6 +429,114 @@
         db.ref('horarios').push({ titulo: t, foto: await comprimirImagen(f) });
         alert("Subido");
     }
+
+    // --- NUEVAS FUNCIONES PARA EL PERFIL Y EL DIRECTORIO --- //
+    
+    function abrirMiPerfil() {
+        mostrarSeccion('seccionMiPerfil');
+        const user = auth.currentUser;
+        if(user) {
+            // Cargar datos si ya existen
+            db.ref(`perfiles/${user.uid}`).once('value').then(s => {
+                const d = s.val();
+                if(d) {
+                    document.getElementById('perfil-nombre').value = d.nombre || "";
+                    document.getElementById('perfil-apellido').value = d.apellido || "";
+                    document.getElementById('perfil-funcionario').value = d.funcionario || "";
+                    document.getElementById('perfil-tel').value = d.tel || "";
+                    document.getElementById('perfil-emergencia').value = d.emergencia || "";
+                    document.getElementById('perfil-domicilio').value = d.domicilio || "";
+                    document.getElementById('perfil-salud').value = d.salud || "";
+                    document.getElementById('perfil-venc-libreta').value = d.vencLibreta || "";
+                    document.getElementById('perfil-venc-salud').value = d.vencSalud || "";
+                    if(d.foto) document.getElementById('perfil-preview').src = d.foto;
+                }
+            });
+        }
+    }
+
+    async function guardarPerfil() {
+        const user = auth.currentUser;
+        if(!user) return alert("Error: Sesión no válida.");
+        
+        const btn = document.getElementById('btn-guardar-perfil');
+        btn.innerText = "⏳ GUARDANDO...";
+        btn.disabled = true;
+
+        let datos = {
+            nombre: document.getElementById('perfil-nombre').value,
+            apellido: document.getElementById('perfil-apellido').value,
+            funcionario: document.getElementById('perfil-funcionario').value,
+            tel: document.getElementById('perfil-tel').value,
+            emergencia: document.getElementById('perfil-emergencia').value,
+            domicilio: document.getElementById('perfil-domicilio').value,
+            salud: document.getElementById('perfil-salud').value,
+            vencLibreta: document.getElementById('perfil-venc-libreta').value,
+            vencSalud: document.getElementById('perfil-venc-salud').value,
+            correo: user.email // guardamos el correo para referencia
+        };
+
+        const file = document.getElementById('perfil-foto').files[0];
+        if(file) {
+            datos.foto = await comprimirImagen(file); // Usa tu mismo compresor de siempre
+        } else {
+            // Si no subió foto nueva, mantenemos la que estaba (si existe)
+            const srcExistente = document.getElementById('perfil-preview').src;
+            if(!srcExistente.includes("placeholder")) {
+                datos.foto = srcExistente;
+            }
+        }
+
+        db.ref(`perfiles/${user.uid}`).set(datos).then(() => {
+            alert("✅ Perfil actualizado correctamente.");
+            btn.innerText = "💾 GUARDAR MIS DATOS";
+            btn.disabled = false;
+            mostrarSeccion('pantallaBienvenida');
+        }).catch(e => {
+            alert("Error al guardar: " + e.message);
+            btn.innerText = "💾 GUARDAR MIS DATOS";
+            btn.disabled = false;
+        });
+    }
+
+    // Carga automática del directorio para todos
+    db.ref('perfiles').on('value', s => {
+        const d = s.val(); 
+        const div = document.getElementById('contenedorDirectorio'); 
+        div.innerHTML = "";
+        
+        if(!d) {
+            div.innerHTML = "<p style='text-align:center; color: #666;'>No hay perfiles registrados aún.</p>";
+            return;
+        }
+        
+        // Función para cambiar YYYY-MM-DD a DD/MM/YYYY
+        const formatF = (fecha) => {
+            if(!fecha) return '-';
+            const partes = fecha.split('-');
+            return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : fecha;
+        };
+
+        for(let uid in d) {
+            const p = d[uid];
+            const fotoPerfil = p.foto || "https://via.placeholder.com/150?text=SIN+FOTO";
+            
+            div.innerHTML += `
+            <div class="directorio-card">
+                <img src="${fotoPerfil}" class="avatar" onclick="abrirVisor(this.src)">
+                <div class="directorio-info">
+                    <b style="font-size: 1.15rem; color: #2c3e50;">${p.nombre || 'Compañero'} ${p.apellido || ''}</b> 
+                    <small style="color: #8e44ad; font-weight: bold;">#${p.funcionario || '-'}</small>
+                    <p>📱 <b>Celular:</b> <a href="tel:${p.tel}" style="color: #2980b9; text-decoration: none;">${p.tel || 'No registrado'}</a></p>
+                    <p>🆘 <b>Emergencia:</b> <a href="tel:${p.emergencia}" style="color: #e74c3c; text-decoration: none;">${p.emergencia || 'No registrado'}</a></p>
+                    <p>🏠 <b>Domicilio:</b> ${p.domicilio || '-'}</p>
+                    <p>🏥 <b>Salud:</b> ${p.salud || '-'} <br>⏳ <b>Vence:</b> <span style="color: #d35400; font-weight:bold;">${formatF(p.vencSalud)}</span></p>
+                    <p>🪪 <b>Venc. Libreta:</b> <span style="color: #d35400; font-weight:bold;">${formatF(p.vencLibreta)}</span></p>
+                </div>
+            </div>`;
+        }
+    });
+    // --- FIN FUNCIONES PERFIL Y DIRECTORIO --- //
 
     db.ref('auxilios').on('value', s => {
         const d = s.val(); const div = document.getElementById('monitorAuxilios'); div.innerHTML = "";
