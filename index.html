@@ -34,7 +34,7 @@
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; color: #333; padding-bottom: 50px; }
         
         /* Marca de agua logo */
-        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: 60% auto; opacity: 0.05; pointer-events: none; z-index: -1; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: 60% auto; opacity: 0.50; pointer-events: none; z-index: -1; }
 
         header { background: var(--primary); color: white; padding: 20px; text-align: center; }
         .container { max-width: 800px; margin: auto; padding: 15px; }
@@ -151,20 +151,9 @@
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">Volver al Menú</button>
     </div>
 
-    <!-- SECCIÓN HORARIOS (CON EL NUEVO ASISTENTE DE IA) -->
+    <!-- SECCIÓN HORARIOS -->
     <div id="seccionHorarios" class="panel hidden">
         <h2 style="text-align: center; color: var(--primary);">Horarios Vigentes</h2>
-        
-        <!-- PANEL DE INTELIGENCIA ARTIFICIAL -->
-        <div style="background: #e8f8f5; padding: 15px; border-radius: 8px; border: 2px dashed var(--accent); margin-bottom: 20px;">
-            <h3 style="margin-top:0; color: var(--primary);">🤖 Asistente Inteligente</h3>
-            <p style="font-size: 0.9rem; color: #555;">Preguntale a la IA por el próximo coche (Ej: "¿A qué hora pasa el próximo Línea 7?")</p>
-            <input type="text" id="preguntaIA" placeholder="Escribí tu pregunta aquí...">
-            <button class="btn-sub" id="btnIA" onclick="preguntarAsistente()">PREGUNTAR</button>
-            <div id="respuestaIA" style="margin-top: 15px; font-size: 1.1rem; color: var(--primary); font-weight: bold;"></div>
-        </div>
-        <!-- FIN PANEL IA -->
-
         <div id="contenedorHorarios"></div>
         <button class="btn-gray" onclick="mostrarSeccion('pantallaBienvenida')">Volver al Menú</button>
     </div>
@@ -299,95 +288,6 @@
     const db = firebase.database(); const auth = firebase.auth();
     const { Geolocation } = (typeof Capacitor !== 'undefined') ? Capacitor.Plugins : { Geolocation: null };
 
-    // ==========================================
-    // CLAVE DE INTELIGENCIA ARTIFICIAL (GEMINI)
-    // ==========================================
-    const GEMINI_API_KEY = "AQ.Ab8RNGLPkOxyIWgP64hYBbh1uRyOJDuFIMrX-QGrVP9Bn0Cing"; 
-
-    // Función principal del asistente virtual
-    async function preguntarAsistente() {
-        const pregunta = document.getElementById('preguntaIA').value;
-        const divRespuesta = document.getElementById('respuestaIA');
-        const btn = document.getElementById('btnIA');
-
-        if(!pregunta) return alert("Escribí una pregunta primero.");
-
-        btn.innerText = "⏳ PENSANDO...";
-        btn.disabled = true;
-        divRespuesta.innerHTML = "Buscando la tabla de horarios...";
-
-        // 1. Obtener las fotos de horarios desde Firebase
-        db.ref('horarios').once('value').then(async (snapshot) => {
-            const horarios = snapshot.val();
-            if(!horarios) {
-                divRespuesta.innerHTML = "No hay horarios cargados en la base de datos.";
-                btn.innerText = "PREGUNTAR"; btn.disabled = false;
-                return;
-            }
-
-            // 2. Buscar a qué línea se refiere la pregunta
-            let fotoDataUrl = null;
-            let lineaDetectada = "";
-            
-            for (let id in horarios) {
-                let tituloStr = horarios[id].titulo.toLowerCase();
-                if(pregunta.toLowerCase().includes(tituloStr)) {
-                    fotoDataUrl = horarios[id].foto;
-                    lineaDetectada = horarios[id].titulo;
-                    break;
-                }
-            }
-
-            if(!fotoDataUrl) {
-                divRespuesta.innerHTML = "⚠️ No entendí de qué línea me hablas. Por favor, escribí el nombre tal cual está en los carteles de abajo (Ej: 'Línea 7').";
-                btn.innerText = "PREGUNTAR"; btn.disabled = false;
-                return;
-            }
-
-            divRespuesta.innerHTML = `Leyendo la foto de <b>${lineaDetectada}</b>...`;
-
-            // 3. Preparar la imagen para la IA
-            const base64Data = fotoDataUrl.split(',')[1];
-            const mimeType = fotoDataUrl.substring(fotoDataUrl.indexOf(':') + 1, fotoDataUrl.indexOf(';'));
-            
-            // 4. Capturar la hora actual exacta
-            const horaActual = new Date().toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
-            const promptText = `Eres un asistente para choferes de Salto. La hora actual es ${horaActual}. El chofer te pregunta: "${pregunta}". Mira la imagen adjunta que es el horario de la ${lineaDetectada}. Responde de forma muy corta, amable y directa a qué hora sale el próximo ómnibus según la hora actual y la imagen.`;
-
-            // 5. Consultar a Google Gemini
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: promptText },
-                                { inlineData: { mimeType: mimeType, data: base64Data } }
-                            ]
-                        }]
-                    })
-                });
-
-                const data = await response.json();
-                
-                if(data.error) {
-                    divRespuesta.innerHTML = "❌ Error: " + data.error.message;
-                    console.log(data.error);
-                } else if(data.candidates && data.candidates.length > 0) {
-                    divRespuesta.innerHTML = "🤖 " + data.candidates[0].content.parts[0].text;
-                } else {
-                    divRespuesta.innerHTML = "❌ No pude leer la tabla, intenta de nuevo.";
-                }
-            } catch (e) {
-                divRespuesta.innerHTML = "❌ Error de conexión con la Inteligencia Artificial.";
-            }
-
-            btn.innerText = "PREGUNTAR";
-            btn.disabled = false;
-        });
-    }
-
     // --- FUNCIONES VISUALES Y SESIÓN ---
     function abrirVisor(src) {
         const fondo = document.createElement('div'); fondo.className = 'visor-fondo';
@@ -410,6 +310,7 @@
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('pantallaBienvenida').classList.remove('hidden');
             document.getElementById('informacionPublica').classList.remove('hidden');
+            // Saludo personalizado sin el correo
             const username = user.email.split('@')[0];
             document.getElementById('saludoUsuario').innerText = "Hola, " + username;
         } else { document.getElementById('seccionLogin').classList.remove('hidden'); }
@@ -524,7 +425,10 @@
         const input = document.getElementById(`file-${id}`);
         const file = input.files[0];
         if(!file) return alert("Primero debe seleccionar una nueva foto desde su dispositivo.");
+        
+        // Pide la clave sin anunciar que es "necesaria" en el HTML
         if(prompt("Ingrese clave:") !== "0987") return alert("Acceso denegado.");
+        
         alert("Procesando actualización...");
         let nuevaFoto = await comprimirImagen(file);
         db.ref(`horarios/${id}`).update({ foto: nuevaFoto });
