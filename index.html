@@ -80,7 +80,7 @@
         
         <!-- NUEVOS BOTONES DE PERFIL Y DIRECTORIO -->
         <button class="btn-blue" style="background:#2980b9" onclick="abrirMiPerfil()">👤 MI PERFIL</button>
-        <button class="btn-blue" style="background:#8e44ad" onclick="mostrarSeccion('seccionDirectorio')">👥 DIRECTORIO COMPAÑEROS</button>
+        <button class="btn-blue" style="background:#8e44ad" onclick="mostrarSeccion('seccionDirectorio')">👥 Agenda de funcionarios</button>
         
         <button class="btn-gray" onclick="cerrarSesion()" style="margin-top: 20px;">CERRAR SESIÓN</button>
     </div>
@@ -178,7 +178,7 @@
 
     <div id="informacionPublica" class="hidden">
         <div class="panel" style="border: 3px solid var(--danger); background: #fff5f5;">
-            <h3 style="color: var(--danger);">🆘 REPORTAR COCHE ROTO</h3>
+            <h3 style="color: var(--danger);">🆘 REPORTAR VEHICULO ROTO</h3>
             <input type="text" id="aux-interno" placeholder="LINEA">
             <input type="text" id="aux-nombre" placeholder="TURNO">
             <textarea id="aux-desc" placeholder="¿Describa lo que paso?"></textarea>
@@ -235,11 +235,11 @@
             </div>
             
             <div class="panel">
-                <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA</h3>
-                <p style="text-align: center; font-size: 14px; color: #555;">Elija una opción bien clara para subir la foto:</p>
+                <h3>📋COLABORE SUBIENDO LA PLANILLA DIARIA AQUI</h3>
+                <p style="text-align: center; font-size: 14px; color: #555;">Elija una opción para subir la foto:</p>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1; background: #e8f8f5; padding: 15px; border-radius: 8px; border: 2px dashed #27ae60; text-align: center;">
-                        <b style="color: #27ae60; display: block; margin-bottom: 8px;">📷 USAR CÁMARA AHORA</b>
+                        <b style="color: #27ae60; display: block; margin-bottom: 8px;">📷 USAR CÁMARA </b>
                         <input type="file" id="p-foto-cam" accept="image/*" capture="environment" style="width: 100%; font-size: 12px; padding: 5px;" onchange="document.getElementById('p-foto-gal').value=''">
                     </div>
                     <div style="flex: 1; background: #ebf5fb; padding: 15px; border-radius: 8px; border: 2px dashed #3498db; text-align: center;">
