@@ -33,6 +33,7 @@
         
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; color: #333; padding-bottom: 50px; }
         
+        /* Marca de agua logo */
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: 60% auto; opacity: 0.05; pointer-events: none; z-index: -1; }
 
         header { background: var(--primary); color: white; padding: 20px; text-align: center; }
@@ -60,6 +61,7 @@
         .fecha-pro { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-weight: 900; font-size: 1.4rem; display: block; text-align: center; border: 2px solid #ffeeba; margin-bottom: 12px; }
         .btn-call { background: #27ae60; display: flex; align-items: center; justify-content: center; text-decoration: none; color: white; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; }
 
+        /* Estilos Directorio y Perfil */
         .avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 10px; background: #eee; }
         .directorio-card { display: flex; align-items: flex-start; gap: 15px; border-left: 6px solid var(--accent); padding: 15px; margin-bottom: 15px; background: rgba(255,255,255,0.95); border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .directorio-info { flex: 1; font-size: 0.95rem; line-height: 1.4; }
@@ -300,7 +302,7 @@
     // ==========================================
     // CLAVE DE INTELIGENCIA ARTIFICIAL (GEMINI)
     // ==========================================
-    const GEMINI_API_KEY = "AQ.Ab8RN6LPK0XyBWgP64hYBbh1uRyOJDuFlMrX-QGrVP9Bn0Cing"; 
+    const GEMINI_API_KEY = "AQ.Ab8RNGLPkOxyIWgP64hYBbh1uRyOJDuFIMrX-QGrVP9Bn0Cing"; 
 
     // Función principal del asistente virtual
     async function preguntarAsistente() {
@@ -329,7 +331,6 @@
             
             for (let id in horarios) {
                 let tituloStr = horarios[id].titulo.toLowerCase();
-                // Si la pregunta del chofer menciona el título del horario (Ej "Línea 7")
                 if(pregunta.toLowerCase().includes(tituloStr)) {
                     fotoDataUrl = horarios[id].foto;
                     lineaDetectada = horarios[id].titulo;
@@ -362,7 +363,7 @@
                         contents: [{
                             parts: [
                                 { text: promptText },
-                                { inline_data: { mime_type: mimeType, data: base64Data } }
+                                { inlineData: { mimeType: mimeType, data: base64Data } }
                             ]
                         }]
                     })
@@ -371,7 +372,7 @@
                 const data = await response.json();
                 
                 if(data.error) {
-                    divRespuesta.innerHTML = "❌ Error en la API (Revisar que la clave sea correcta).";
+                    divRespuesta.innerHTML = "❌ Error: " + data.error.message;
                     console.log(data.error);
                 } else if(data.candidates && data.candidates.length > 0) {
                     divRespuesta.innerHTML = "🤖 " + data.candidates[0].content.parts[0].text;
