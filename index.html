@@ -253,10 +253,10 @@
         </div>
         <div id="menuTaller" class="hidden">
             <div class="panel" style="background:#e8f8f5">
-                <h3>⚙️ Administrar Horarios</h3>
-                <input type="text" id="h-titulo" placeholder="Título">
+                <h3>⚙️ Administrar Horarios (Crear nueva línea)</h3>
+                <input type="text" id="h-titulo" placeholder="Título (Ej: Línea 1)">
                 <input type="file" id="h-foto" accept="image/*">
-                <button class="btn-green" onclick="actualizarHorario()">SUBIR HORARIO</button>
+                <button class="btn-green" onclick="actualizarHorario()">SUBIR NUEVA LÍNEA</button>
             </div>
             <h3>🔧 PIZARRON PARA EL TALLER</h3>
             <div id="tareasTaller"></div>
@@ -427,7 +427,7 @@
         const t = document.getElementById('h-titulo').value; const f = document.getElementById('h-foto').files[0];
         if(!t || !f) return alert("Faltan datos");
         db.ref('horarios').push({ titulo: t, foto: await comprimirImagen(f) });
-        alert("Subido");
+        alert("Subido exitosamente");
     }
 
     // --- NUEVAS FUNCIONES PARA EL PERFIL Y EL DIRECTORIO --- //
@@ -538,6 +538,23 @@
     });
     // --- FIN FUNCIONES PERFIL Y DIRECTORIO --- //
 
+    // --- NUEVA FUNCIÓN: ACTUALIZAR FOTO DE HORARIO SIN BORRAR LA LÍNEA --- //
+    async function actualizarFotoFija(id) {
+        const file = document.getElementById(`h-file-${id}`).files[0];
+        if(!file) return;
+        
+        // Ponemos un pequeño aviso mientras procesa para que el usuario sepa que está trabajando
+        const divCard = document.getElementById(`h-file-${id}`).parentElement;
+        const btn = divCard.querySelector('button');
+        btn.innerText = "⏳ ACTUALIZANDO...";
+        btn.disabled = true;
+
+        let nuevaFoto = await comprimirImagen(file);
+        db.ref(`horarios/${id}`).update({ foto: nuevaFoto })
+          .then(() => alert("¡Horario actualizado con éxito!"))
+          .catch(e => alert("Error al actualizar: " + e.message));
+    }
+
     db.ref('auxilios').on('value', s => {
         const d = s.val(); const div = document.getElementById('monitorAuxilios'); div.innerHTML = "";
         for(let id in d) {
@@ -551,9 +568,24 @@
         }
     });
 
+    // --- SECCIÓN DE HORARIOS MODIFICADA (Selector oculto y botón actualizar) --- //
     db.ref('horarios').on('value', s => {
-        const d = s.val(); const div = document.getElementById('contenedorHorarios'); div.innerHTML = "";
-        for(let id in d) div.innerHTML += `<div class="card"><b>${d[id].titulo}</b><img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)"><button class="btn-red" onclick="if(prompt('Clave:')=='0987') db.ref('horarios/${id}').remove()">BORRAR</button></div>`;
+        const d = s.val(); 
+        const div = document.getElementById('contenedorHorarios'); 
+        div.innerHTML = "";
+        
+        for(let id in d) {
+            div.innerHTML += `
+            <div class="card" style="border-left: 6px solid #2c3e50;">
+                <b style="font-size: 1.2rem; color: #2c3e50;">${d[id].titulo}</b>
+                <img src="${d[id].foto}" class="img-preview" onclick="abrirVisor(this.src)">
+                
+                <!-- Input de archivo oculto que se activa desde el botón -->
+                <input type="file" id="h-file-${id}" accept="image/*" style="display: none;" onchange="actualizarFotoFija('${id}')">
+                
+                <button class="btn-blue" style="margin-top: 15px; background: #34495e;" onclick="if(prompt('Clave de administrador:')=='0987') document.getElementById('h-file-${id}').click()">🔄 CAMBIAR FOTO</button>
+            </div>`;
+        }
     });
 
     db.ref('cortes').on('value', s => {
