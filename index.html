@@ -31,7 +31,8 @@
             --warning: #f39c12;
         }
         
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; color: #333; padding-bottom: 50px; }
+        /* Aumentamos el padding-bottom a 90px para que la radio no tape el final de la app */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; color: #333; padding-bottom: 90px; }
         
         /* Marca de agua logo */
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: 60% auto; opacity: 0.50; pointer-events: none; z-index: -1; }
@@ -40,7 +41,7 @@
         .container { max-width: 800px; margin: auto; padding: 15px; }
         .panel { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         button { width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; margin-top: 10px; transition: 0.3s; }
         .btn-main { background: var(--primary); }
         .btn-sub { background: var(--accent); }
@@ -68,12 +69,24 @@
         .directorio-info p { margin: 4px 0; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
         .directorio-info p:last-child { border-bottom: none; }
         .label-perfil { font-size: 0.85rem; color: #666; font-weight: bold; margin-top: 10px; display: block; }
+
+        /* NUEVO: Estilos de la Radio Flotante */
+        #radioBar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white; padding: 10px 15px; box-sizing: border-box; display: flex; gap: 10px; align-items: center; justify-content: space-between; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); z-index: 9000; }
+        #radioSelect { margin: 0; padding: 8px; flex: 1; border-radius: 4px; font-size: 14px; color: #333; }
+        .btn-radio { width: auto; padding: 10px 20px; margin: 0; background: var(--accent); font-size: 1.2rem; }
+
+        /* NUEVO: Estilos del Minijuego Oculto */
+        #modalJuego { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        canvas { background: #333; border: 4px solid var(--accent); border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .controles-juego { display: flex; width: 100%; max-width: 320px; gap: 10px; margin-top: 20px; }
+        .controles-juego button { margin: 0; padding: 20px; font-size: 1.5rem; background: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+    <!-- NUEVO: onclick="detectarToquesSecretos()" y cursor: pointer -->
+    <img src="logo.png" onclick="detectarToquesSecretos()" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer;">
     <h1 style="margin: 10px 0 5px 0; font-size: 1.6rem;">División Ómnibus</h1>
     <small style="color: #bdc3c7; font-size: 0.9rem; font-weight: bold;">aplicación no oficial</small>
 </header>
@@ -231,6 +244,12 @@
             <a href="tel:1998" class="btn-call" style="background:#2c3e50">🛡️ SEGURO B.S.E.</a>
             <a href="tel:47332715" class="btn-call" style="background:#2c3e50">TALLER</a>
         </div>
+        
+        <!-- NUEVO: EL RADAR DEL CLIMA Y TORMENTAS EN SALTO -->
+        <div class="panel" style="border: 2px solid var(--accent); padding: 0; overflow: hidden;">
+            <h3 style="background: var(--accent); color: white; margin: 0; padding: 15px; text-align: center;">⛈️ RADAR DEL TIEMPO (SALTO)</h3>
+            <iframe width="100%" height="450" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=9&overlay=radar&product=radar&calendar=now&marker=&lat=-31.383&lon=-57.966" frameborder="0" style="display: block;"></iframe>
+        </div>
     </div>
 
     <div id="sec-acciones" class="hidden">
@@ -282,7 +301,161 @@
     </div>
 </div>
 
+<!-- NUEVO: BARRA DE RADIO FLOTANTE -->
+<div id="radioBar">
+    <span style="font-size: 1.5rem;">📻</span>
+    <select id="radioSelect" onchange="cambiarEmisora()">
+        <option value="https://radios.conecta2.uy/8038/stream">Radio Tabaré</option>
+        <option value="https://stream.surradios.com/8026/stream">Arapey</option>
+        <option value="https://server6.stweb.tv/delsol/live/playlist.m3u8">Del Sol FM</option>
+        <option value="https://cdn.instream.audio/:9069/stream">Sport 890</option>
+        <option value="https://sp3.fmdellago.uy:7011/stream">Del Lago FM</option>
+        <option value="https://server.laradiostream.com:8108/stream">Éxodo FM 106.5</option>
+        <option value="https://radios.conecta2.uy/8018/stream">Mundo FM 107.9</option>
+        <option value="https://hd.stweb.tv/carve/live/chunks.m3u8">Carve Deportiva</option>
+    </select>
+    <button class="btn-radio" id="btnPlayRadio" onclick="toggleRadio()">▶️</button>
+    <audio id="reproductorAudio" style="display:none;"></audio>
+</div>
+
+<!-- NUEVO: MODAL DEL MINIJUEGO SECRETO -->
+<div id="modalJuego" class="hidden">
+    <h2 style="margin-bottom: 10px; color: var(--warning);">ESQUIVA LOS POZOS</h2>
+    <div style="margin-bottom: 15px;">Puntos: <span id="juegoPuntos" style="font-weight: bold; font-size: 1.2rem;">0</span></div>
+    <canvas id="canvasJuego" width="300" height="400"></canvas>
+    
+    <div class="controles-juego">
+        <button onclick="moverCoche(-1)">⬅️ IZQ</button>
+        <button onclick="moverCoche(1)">DER ➡️</button>
+    </div>
+    
+    <button class="btn-danger" style="max-width: 300px; margin-top: 30px;" onclick="cerrarJuego()">CERRAR JUEGO</button>
+</div>
+
 <script>
+    // --- LÓGICA DE LA RADIO FLOTANTE ---
+    function cambiarEmisora() {
+        const rep = document.getElementById('reproductorAudio');
+        const comboRadio = document.getElementById('radioSelect');
+        rep.src = comboRadio.value;
+        if(!rep.paused) { rep.play(); }
+    }
+
+    function toggleRadio() {
+        const rep = document.getElementById('reproductorAudio');
+        const comboRadio = document.getElementById('radioSelect');
+        const btnRadio = document.getElementById('btnPlayRadio');
+        
+        if (rep.src === "" || rep.src !== comboRadio.value) {
+            rep.src = comboRadio.value;
+        }
+        
+        if (rep.paused) {
+            rep.play();
+            btnRadio.innerText = "⏸️";
+        } else {
+            rep.pause();
+            btnRadio.innerText = "▶️";
+        }
+    }
+
+    // --- LÓGICA DEL MINIJUEGO SECRETO (3 TOQUES) ---
+    let toques = 0;
+    let timerToques;
+    
+    function detectarToquesSecretos() {
+        toques++;
+        clearTimeout(timerToques);
+        timerToques = setTimeout(() => { toques = 0; }, 800); // 800ms para hacer los toques
+        
+        if(toques === 3) {
+            document.getElementById('modalJuego').classList.remove('hidden');
+            setTimeout(iniciarJuego, 100); 
+            toques = 0;
+        }
+    }
+
+    let canvasJuego, ctxJuego, animacionJuego;
+    let coche = { x: 130, y: 330, ancho: 40, alto: 60 };
+    let pozos = [];
+    let puntos = 0;
+    let velocidadJuego = 3;
+
+    function iniciarJuego() {
+        canvasJuego = document.getElementById("canvasJuego");
+        ctxJuego = canvasJuego.getContext("2d");
+        coche.x = 130; pozos = []; puntos = 0; velocidadJuego = 3;
+        document.getElementById('juegoPuntos').innerText = puntos;
+        cancelAnimationFrame(animacionJuego);
+        loopJuego();
+    }
+
+    function moverCoche(dir) {
+        coche.x += dir * 40;
+        if(coche.x < 10) coche.x = 10;
+        if(coche.x > canvasJuego.width - coche.ancho - 10) coche.x = canvasJuego.width - coche.ancho - 10;
+    }
+
+    function dibujarCoche() {
+        ctxJuego.fillStyle = "#3498db";
+        ctxJuego.fillRect(coche.x, coche.y, coche.ancho, coche.alto);
+        ctxJuego.fillStyle = "#fff";
+        ctxJuego.fillRect(coche.x + 5, coche.y + 5, coche.ancho - 10, 15);
+    }
+
+    function dibujarPozos() {
+        ctxJuego.fillStyle = "#111";
+        for(let i=0; i<pozos.length; i++) {
+            let p = pozos[i];
+            ctxJuego.beginPath();
+            ctxJuego.arc(p.x, p.y, p.radio, 0, Math.PI * 2);
+            ctxJuego.fill();
+        }
+    }
+
+    function loopJuego() {
+        ctxJuego.clearRect(0, 0, canvasJuego.width, canvasJuego.height);
+        
+        if(Math.random() < 0.03) {
+            pozos.push({
+                x: 30 + Math.random() * (canvasJuego.width - 60),
+                y: -30,
+                radio: 15 + Math.random() * 10
+            });
+        }
+
+        dibujarPozos();
+        dibujarCoche();
+
+        for(let i=0; i<pozos.length; i++) {
+            let p = pozos[i];
+            p.y += velocidadJuego;
+
+            if(p.y > coche.y && p.y < coche.y + coche.alto && p.x > coche.x && p.x < coche.x + coche.ancho) {
+                alert("¡CAÍSTE EN UN POZO! Puntos finales: " + Math.floor(puntos));
+                iniciarJuego();
+                return;
+            }
+
+            if(p.y > canvasJuego.height) {
+                pozos.splice(i, 1);
+                puntos += 0.5;
+                document.getElementById('juegoPuntos').innerText = Math.floor(puntos);
+                if(puntos % 10 === 0) velocidadJuego += 0.5;
+            }
+        }
+        
+        animacionJuego = requestAnimationFrame(loopJuego);
+    }
+
+    function cerrarJuego() {
+        cancelAnimationFrame(animacionJuego);
+        document.getElementById('modalJuego').classList.add('hidden');
+    }
+
+    // ==============================================================
+    // A PARTIR DE ACÁ ESTÁ TU CÓDIGO ORIGINAL INTACTO DE FIREBASE
+    // ==============================================================
     const firebaseConfig = { apiKey: "AIzaSyCO2ngrIv3QRdyxgk9USv4sa0b2nPlF8Fw", databaseURL: "https://taller-salto-default-rtdb.firebaseio.com/", projectId: "taller-salto" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); const auth = firebase.auth();
@@ -310,7 +483,6 @@
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('pantallaBienvenida').classList.remove('hidden');
             document.getElementById('informacionPublica').classList.remove('hidden');
-            // Saludo personalizado sin el correo
             const username = user.email.split('@')[0];
             document.getElementById('saludoUsuario').innerText = "Hola, " + username;
         } else { document.getElementById('seccionLogin').classList.remove('hidden'); }
@@ -426,7 +598,6 @@
         const file = input.files[0];
         if(!file) return alert("Primero debe seleccionar una nueva foto desde su dispositivo.");
         
-        // Pide la clave sin anunciar que es "necesaria" en el HTML
         if(prompt("Ingrese clave:") !== "0987") return alert("Acceso denegado.");
         
         alert("Procesando actualización...");
