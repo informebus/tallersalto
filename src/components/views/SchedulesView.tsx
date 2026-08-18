@@ -265,7 +265,7 @@ export const SchedulesView: React.FC<SchedulesViewProps> = ({
         <form onSubmit={handleUploadCodigos} className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
           <div className="flex-1 w-full">
             <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-              Actualizar Imagen de Códigos (PIN: 0987)
+              Actualizar Imagen de Códigos 
             </label>
             <input
               type="file"
