@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wrench, Plus, CheckCircle2, Trash2, ShieldAlert, Upload, Loader2, MapPin } from 'lucide-react';
+import { Wrench, Plus, CheckCircle2, Trash2, ShieldAlert, Upload, Loader2, MapPin, Share2, Eye } from 'lucide-react';
 import { db } from '../../firebase';
 import { AuxilioItem, TareaItem } from '../../types';
 import { comprimirImagen } from '../../utils/image';
@@ -128,29 +128,53 @@ export const WorkshopView: React.FC<WorkshopViewProps> = ({
                   {aux.foto && (
                     <div
                       onClick={() => onOpenImage(aux.foto!)}
-                      className="w-full bg-slate-900/5 rounded-lg border border-slate-200 mb-3 overflow-hidden flex items-center justify-center p-1 cursor-pointer hover:opacity-90 transition max-h-56"
+                      className="w-full rounded-xl border border-rose-200 mb-3 overflow-hidden bg-slate-950 relative group cursor-pointer shadow-xs"
                     >
                       <img
                         src={aux.foto}
                         alt="Auxilio"
-                        className="max-w-full max-h-52 object-contain mx-auto rounded"
+                        className="w-full h-48 sm:h-56 object-cover block group-hover:scale-102 transition duration-200"
+                        loading="lazy"
                       />
+                      <div className="absolute bottom-2 right-2 bg-slate-900/85 backdrop-blur-xs text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white/20 flex items-center gap-1 shadow-sm">
+                        <Eye className="w-3.5 h-3.5 text-rose-400" />
+                        Ver foto completa
+                      </div>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2 pt-2 border-t border-rose-100">
-                  {aux.mapa && (
+                  <div className="flex gap-2">
+                    {aux.mapa && (
+                      <a
+                        href={aux.mapa}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-blue-600 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        GPS
+                      </a>
+                    )}
                     <a
-                      href={aux.mapa}
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                        `🚨 *AUXILIO MECÁNICO EN TALLER*\n` +
+                        `🚌 *Coche:* ${aux.interno}\n` +
+                        `👤 *Chofer:* ${aux.conductor}\n` +
+                        `🕒 *Hora:* ${aux.fecha}\n` +
+                        `📋 *Falla:* ${aux.desc}\n` +
+                        (aux.mapa ? `📍 *GPS:* ${aux.mapa}\n` : '')
+                      )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-blue-600 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                      className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition shadow-2xs"
+                      title="Reenviar a cuadrilla por WhatsApp"
                     >
-                      <MapPin className="w-3.5 h-3.5" />
-                      Ubicación GPS
+                      <Share2 className="w-3.5 h-3.5" />
+                      WhatsApp
                     </a>
-                  )}
+                  </div>
 
                   <button
                     onClick={() => handleFinalizarAuxilio(aux.id!)}
@@ -222,13 +246,18 @@ export const WorkshopView: React.FC<WorkshopViewProps> = ({
                     {t.foto && (
                       <div
                         onClick={() => onOpenImage(t.foto!)}
-                        className="w-full bg-slate-900/5 rounded-lg border border-slate-200 mb-3 overflow-hidden flex items-center justify-center p-1 cursor-pointer hover:opacity-90 transition max-h-52"
+                        className="w-full rounded-xl border border-slate-200 mb-3 overflow-hidden bg-slate-950 relative group cursor-pointer shadow-xs"
                       >
                         <img
                           src={t.foto}
                           alt="Foto tarea"
-                          className="max-w-full max-h-48 object-contain mx-auto rounded"
+                          className="w-full h-44 sm:h-52 object-cover block group-hover:scale-102 transition duration-200"
+                          loading="lazy"
                         />
+                        <div className="absolute bottom-2 right-2 bg-slate-900/85 backdrop-blur-xs text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white/20 flex items-center gap-1 shadow-sm">
+                          <Eye className="w-3.5 h-3.5 text-blue-400" />
+                          Ver foto
+                        </div>
                       </div>
                     )}
 

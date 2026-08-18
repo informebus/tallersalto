@@ -1,8 +1,20 @@
 import React from 'react';
-import { PhoneCall, Shield, Flame, Wrench, Siren } from 'lucide-react';
+import { PhoneCall, Shield, Flame, Wrench, Siren, UserCheck } from 'lucide-react';
 
 export const EmergencyDialer: React.FC = () => {
   const contacts = [
+    {
+      name: 'Cuerpo Inspectivo',
+      num: '47335090',
+      badge: '4733 5090',
+      desc: 'Tránsito e inspectores de línea',
+      bg: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconBg: 'bg-emerald-600 text-white',
+      badgeBg: 'bg-emerald-600 text-white',
+      titleColor: 'text-emerald-900',
+      descColor: 'text-emerald-700',
+      icon: UserCheck,
+    },
     {
       name: 'Policía Nacional',
       num: '911',
@@ -65,27 +77,27 @@ export const EmergencyDialer: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
         {contacts.map((c) => {
           const Icon = c.icon;
           return (
             <a
               key={c.num}
               href={`tel:${c.num}`}
-              className={`flex items-center justify-between p-3.5 rounded-xl border ${c.bg} transition-colors shadow-xs active:scale-[0.99]`}
+              className={`flex items-center justify-between gap-2 p-3 sm:p-3.5 rounded-xl border ${c.bg} transition-all shadow-xs active:scale-[0.98]`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.iconBg} shrink-0`}>
                   <Icon className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className={`font-bold text-sm leading-tight ${c.titleColor}`}>{c.name}</h4>
-                  <p className={`text-xs ${c.descColor} font-medium`}>{c.desc}</p>
+                <div className="min-w-0">
+                  <h4 className={`font-bold text-xs sm:text-sm leading-tight ${c.titleColor} truncate`}>{c.name}</h4>
+                  <p className={`text-[11px] sm:text-xs ${c.descColor} font-medium line-clamp-1`}>{c.desc}</p>
                 </div>
               </div>
-              <div className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-mono font-bold ${c.badgeBg}`}>
-                <PhoneCall className="w-3 h-3" />
-                {c.badge}
+              <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-bold ${c.badgeBg} shrink-0 shadow-2xs`}>
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span>{c.badge}</span>
               </div>
             </a>
           );

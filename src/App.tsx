@@ -167,7 +167,7 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 pb-24 md:pb-6">
         {!user ? (
           <LoginView />
         ) : (

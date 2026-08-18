@@ -151,19 +151,20 @@ export const SchedulesView: React.FC<SchedulesViewProps> = ({
                   </div>
 
                   {/* Thumbnail Image */}
-                  <div className="relative group p-3 bg-slate-50 flex items-center justify-center min-h-[160px]">
+                  <div 
+                    onClick={() => onOpenImage(h.foto)}
+                    className="relative group bg-slate-950 cursor-pointer h-52 sm:h-56 flex items-center justify-center overflow-hidden"
+                  >
                     <img
                       src={h.foto}
                       alt={h.titulo}
-                      className="max-w-full max-h-48 object-contain bg-white rounded-lg border border-slate-200"
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      loading="lazy"
                     />
-                    <button
-                      onClick={() => onOpenImage(h.foto)}
-                      className="absolute inset-3 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition rounded-lg text-white text-xs font-semibold gap-1.5 backdrop-blur-xs"
-                    >
-                      <Eye className="w-4 h-4" />
-                      Ver Horario
-                    </button>
+                    <div className="absolute inset-0 bg-slate-900/30 group-hover:bg-slate-900/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs font-semibold gap-1.5 backdrop-blur-xs">
+                      <Eye className="w-4 h-4 text-blue-400" />
+                      Ver Horario Completo
+                    </div>
                   </div>
                 </div>
 
@@ -241,19 +242,22 @@ export const SchedulesView: React.FC<SchedulesViewProps> = ({
         </div>
 
         {codigos?.foto ? (
-          <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center p-2 min-h-[180px]">
+          <div 
+            onClick={() => onOpenImage(codigos.foto)}
+            className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-950 cursor-pointer h-60 sm:h-72 flex items-center justify-center shadow-xs"
+          >
             <img
               src={codigos.foto}
               alt="Nuevos Códigos de Destino"
-              className="max-w-full max-h-96 object-contain mx-auto rounded-lg shadow-2xs"
+              className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+              loading="lazy"
             />
-            <button
-              onClick={() => onOpenImage(codigos.foto)}
-              className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition rounded-xl text-white text-xs font-semibold gap-2 backdrop-blur-xs"
-            >
-              <Eye className="w-4 h-4" />
-              Ampliar Nuevos Códigos
-            </button>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+              <span className="text-xs font-bold flex items-center gap-1.5 drop-shadow-sm">
+                <Eye className="w-4 h-4 text-purple-400" />
+                Toca para ampliar y ver todos los códigos
+              </span>
+            </div>
           </div>
         ) : (
           <div className="p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-xs text-slate-500">

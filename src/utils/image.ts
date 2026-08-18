@@ -10,15 +10,13 @@ export async function comprimirImagen(file: File, maxDim = 1280, quality = 0.8):
       let w = bitmap.width;
       let h = bitmap.height;
 
-      if (w > h) {
-        if (w > maxDim) {
-          h = Math.round(h * (maxDim / w));
+      if (w > maxDim || h > maxDim) {
+        if (w >= h) {
+          h = Math.max(1, Math.round((h * maxDim) / w));
           w = maxDim;
-        }
-      } else {
-        if (h > maxDim) {
-          w = Math.round(w * (maxDim / h));
-          w = maxDim;
+        } else {
+          w = Math.max(1, Math.round((w * maxDim) / h));
+          h = maxDim;
         }
       }
 
@@ -47,22 +45,20 @@ export async function comprimirImagen(file: File, maxDim = 1280, quality = 0.8):
       img.src = e.target?.result as string;
       img.onerror = () => reject(new Error('Error al cargar la imagen'));
       img.onload = () => {
-        const canvas = document.createElement('canvas');
         let w = img.naturalWidth || img.width;
         let h = img.naturalHeight || img.height;
 
-        if (w > h) {
-          if (w > maxDim) {
-            h = Math.round(h * (maxDim / w));
+        if (w > maxDim || h > maxDim) {
+          if (w >= h) {
+            h = Math.max(1, Math.round((h * maxDim) / w));
             w = maxDim;
-          }
-        } else {
-          if (h > maxDim) {
-            w = Math.round(w * (maxDim / h));
-            w = maxDim;
+          } else {
+            w = Math.max(1, Math.round((w * maxDim) / h));
+            h = maxDim;
           }
         }
 
+        const canvas = document.createElement('canvas');
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
