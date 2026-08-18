@@ -37,7 +37,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   return (
     <>
       {/* Top Desktop/Tablet Navigation Bar */}
-      <nav className="hidden md:flex items-center justify-center p-1.5 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-4xl mx-auto mb-6">
+      <nav className="hidden md:flex items-center justify-center p-1.5 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-2xl mx-auto mb-6">
         <div className="flex items-center gap-1.5 w-full justify-between">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -67,7 +67,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* Mobile Bottom Navigation Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-md px-2 py-2 shadow-lg safe-area-bottom">
-        <div className="flex items-center justify-around max-w-lg mx-auto">
+        <div className="flex items-center justify-around max-w-md mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id || (tab.id === 'directorio' && currentTab === 'perfil');
@@ -101,3 +101,4 @@ export const Navigation: React.FC<NavigationProps> = ({
     </>
   );
 };
+
