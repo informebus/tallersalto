@@ -32,7 +32,7 @@ export const SchedulesView: React.FC<SchedulesViewProps> = ({
       return;
     }
 
-    onRequestPin('Actualizar Imagen de Horario', '0987', async () => {
+    onRequestPin('Actualizar Imagen de Horario', async () => {
       setUpdatingId(id);
       try {
         const compressed = await comprimirImagen(file);
