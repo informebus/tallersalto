@@ -73,6 +73,7 @@ export interface ObjetoPerdidoItem {
   id?: string;
   fecha: string;
   articulo: string;
+  linea?: string; // Línea o nomenclátor donde se encontró
   encontrado_por: string;
   estado: 'Retenido' | 'Devuelto';
   entregado_a?: string;
@@ -84,8 +85,10 @@ export interface CambioTurnoItem {
   fecha_solicitud: string;
   conductor_solicitante: string;
   turno_original: string;
-  conductor_reemplazo: string;
-  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+  conductor_reemplazo?: string; // Chofer que toma el turno (vacío al publicarse)
+  estado: 'Pendiente' | 'Aceptado' | 'Aprobado' | 'Rechazado';
+  motivo?: string;
+  fecha_aceptacion?: string;
 }
 
 export type SectionTab = 
