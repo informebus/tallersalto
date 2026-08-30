@@ -30,6 +30,7 @@ import { ImageViewerModal } from './components/ImageViewerModal';
 import { PinPromptModal } from './components/PinPromptModal';
 import { MinigameModal } from './components/MinigameModal';
 import { ReportBreakdownModal } from './components/ReportBreakdownModal';
+import { DynamicBackground } from './components/DynamicBackground';
 
 import { SaltoLogo } from './components/SaltoLogo';
 import { AlertTriangle, Info } from 'lucide-react';
@@ -168,7 +169,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-transparent text-slate-100 flex flex-col selection:bg-sky-500 selection:text-white relative">
+      {/* Dynamic Background Wallpaper Slider */}
+      <DynamicBackground />
+
       {/* App Header */}
       <Header
         user={user}
@@ -179,7 +183,7 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 pb-24 md:pb-6">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 pb-24 md:pb-6 relative z-10">
         {!user ? (
           <LoginView />
         ) : (
