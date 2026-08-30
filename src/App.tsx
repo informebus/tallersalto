@@ -4,10 +4,12 @@ import { db, auth } from './firebase';
 import firebase from './firebase';
 import { 
   AuxilioItem, 
+  CambioTurnoItem,
   CodigoItem, 
   ComunicadoItem, 
   CorteItem, 
   HorarioItem, 
+  ObjetoPerdidoItem,
   PerfilItem, 
   PlanillaItem, 
   SectionTab, 
@@ -22,6 +24,8 @@ import { SchedulesView } from './components/views/SchedulesView';
 import { DirectoryView } from './components/views/DirectoryView';
 import { ProfileView } from './components/views/ProfileView';
 import { WorkshopView } from './components/views/WorkshopView';
+import { ObjetosPerdidosView } from './components/views/ObjetosPerdidosView';
+import { CambiosTurnoView } from './components/views/CambiosTurnoView';
 import { ImageViewerModal } from './components/ImageViewerModal';
 import { PinPromptModal } from './components/PinPromptModal';
 import { MinigameModal } from './components/MinigameModal';
@@ -44,6 +48,8 @@ export default function App() {
   const [codigos, setCodigos] = useState<CodigoItem | null>(null);
   const [planilla, setPlanilla] = useState<PlanillaItem | null>(null);
   const [perfiles, setPerfiles] = useState<Record<string, PerfilItem>>({});
+  const [objetosPerdidos, setObjetosPerdidos] = useState<Record<string, ObjetoPerdidoItem>>({});
+  const [cambiosTurno, setCambiosTurno] = useState<Record<string, CambioTurnoItem>>({});
 
   // Modals & Overlays state
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -84,6 +90,8 @@ export default function App() {
     const refCod = db.ref('codigos');
     const refPla = db.ref('planillas');
     const refPer = db.ref('perfiles');
+    const refObj = db.ref('objetos_perdidos');
+    const refCam = db.ref('cambios_turno');
 
     refAux.on('value', (s) => setAuxilios(s.val() || {}));
     refCom.on('value', (s) => setComunicados(s.val() || {}));
@@ -93,6 +101,8 @@ export default function App() {
     refCod.on('value', (s) => setCodigos(s.val() || null));
     refPla.on('value', (s) => setPlanilla(s.val() || null));
     refPer.on('value', (s) => setPerfiles(s.val() || {}));
+    refObj.on('value', (s) => setObjetosPerdidos(s.val() || {}));
+    refCam.on('value', (s) => setCambiosTurno(s.val() || {}));
 
     return () => {
       refAux.off();
@@ -103,6 +113,8 @@ export default function App() {
       refCod.off();
       refPla.off();
       refPer.off();
+      refObj.off();
+      refCam.off();
     };
   }, [user]);
 
@@ -177,6 +189,8 @@ export default function App() {
               currentTab={activeTab}
               onSelectTab={handleSelectTab}
               auxiliosCount={Object.keys(auxilios || {}).length}
+              cambiosCount={Object.values(cambiosTurno || {}).filter((c: CambioTurnoItem) => c && c.estado === 'Pendiente').length}
+              objetosCount={Object.values(objetosPerdidos || {}).filter((o: ObjetoPerdidoItem) => o && o.estado === 'Retenido').length}
             />
 
             {/* View Switcher with Motion */}
@@ -206,6 +220,21 @@ export default function App() {
                   <DriversView
                     currentUserEmail={user.email || ''}
                     onOpenBreakdownModal={() => setIsBreakdownOpen(true)}
+                  />
+                )}
+
+                {activeTab === 'cambios_turno' && (
+                  <CambiosTurnoView
+                    cambios={cambiosTurno}
+                    currentUserEmail={user.email || ''}
+                  />
+                )}
+
+                {activeTab === 'objetos_perdidos' && (
+                  <ObjetosPerdidosView
+                    objetos={objetosPerdidos}
+                    currentUserEmail={user.email || ''}
+                    onOpenImage={(src) => setLightboxSrc(src)}
                   />
                 )}
 

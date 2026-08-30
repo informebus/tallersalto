@@ -69,6 +69,25 @@ export interface CodigoItem {
   foto?: string;
 }
 
+export interface ObjetoPerdidoItem {
+  id?: string;
+  fecha: string;
+  articulo: string;
+  encontrado_por: string;
+  estado: 'Retenido' | 'Devuelto';
+  entregado_a?: string;
+  foto?: string; // base64
+}
+
+export interface CambioTurnoItem {
+  id?: string;
+  fecha_solicitud: string;
+  conductor_solicitante: string;
+  turno_original: string;
+  conductor_reemplazo: string;
+  estado: 'Pendiente' | 'Aprobado' | 'Rechazado';
+}
+
 export type SectionTab = 
   | 'tablero'
   | 'conductores'
@@ -76,4 +95,6 @@ export type SectionTab =
   | 'horarios'
   | 'directorio'
   | 'perfil'
-  | 'taller';
+  | 'taller'
+  | 'objetos_perdidos'
+  | 'cambios_turno';

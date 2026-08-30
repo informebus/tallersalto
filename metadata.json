@@ -1,5 +1,5 @@
 {
-  "name": "Remix División Ómnibus Salto",
+  "name": "División Ómnibus Salto",
   "description": "Aplicación móvil y panel operativo para conductores, taller y personal de la División Ómnibus de Salto.",
   "requestFramePermissions": [
     "geolocation",
