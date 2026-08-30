@@ -38,11 +38,11 @@ export const DynamicBackground: React.FC = () => {
           transition={{ duration: 1.5, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-      </AnimatePresence>
+     </AnimatePresence>
 
       {/* Optimized Dark Contrast Overlay */}
-      <div className="absolute inset-0 bg-slate-950/70" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-slate-950/90" />
+      <div className="absolute inset-0 bg-slate-950/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/10 to-slate-950/60" />
     </div>
   );
 };
