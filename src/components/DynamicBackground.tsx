@@ -6,7 +6,10 @@ const BUS_WALLPAPERS = [
   './foto2.jpeg',
   './1044.jpg',
   './1062.webp',
-  './1046.jpg'
+  './1046.jpg',
+  './him002.webp',
+  './micro.jpg',
+  './foto6.jpeg'
 ];
 
 export const DynamicBackground: React.FC = () => {
@@ -38,7 +41,7 @@ export const DynamicBackground: React.FC = () => {
           transition={{ duration: 1.5, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-     </AnimatePresence>
+      </AnimatePresence>
 
       {/* Optimized Dark Contrast Overlay */}
       <div className="absolute inset-0 bg-slate-950/30" />
