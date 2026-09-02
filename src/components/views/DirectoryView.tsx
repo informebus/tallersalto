@@ -55,7 +55,7 @@ export const DirectoryView: React.FC<DirectoryViewProps> = ({
                 Directorio del Personal
               </h2>
               <p className="text-xs text-slate-500">
-                Conductores, guardas e inspectores de la División Ómnibus
+                Funcionarios del sector
               </p>
             </div>
           </div>

@@ -19,12 +19,11 @@ export const SaltoLogo: React.FC<SaltoLogoProps> = ({
   return (
     <div className={`relative inline-flex items-center justify-center select-none ${className}`}>
       <img
-        src={logoSvg}
+        src={logoPng}
         onError={(e) => {
-          // Fallback to logo.png if svg fails
           const target = e.currentTarget;
-          if (!target.src.endsWith('logo.png')) {
-            target.src = logoPng;
+          if (!target.src.endsWith('logo.svg')) {
+            target.src = logoSvg;
           }
         }}
         alt="Escudo de Salto - División Ómnibus"

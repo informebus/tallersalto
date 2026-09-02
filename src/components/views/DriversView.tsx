@@ -32,7 +32,6 @@ export const DriversView: React.FC<DriversViewProps> = ({
   const [repInterno, setRepInterno] = useState('');
   const [repDesc, setRepDesc] = useState('');
   const [repFoto, setRepFoto] = useState<File | null>(null);
-  const [repUsarGps, setRepUsarGps] = useState(false);
   const [isSubmittingRep, setIsSubmittingRep] = useState(false);
   const [repSuccess, setRepSuccess] = useState(false);
 
@@ -59,16 +58,6 @@ export const DriversView: React.FC<DriversViewProps> = ({
 
     setIsSubmittingRep(true);
     try {
-      let mapaUrl: string | null = null;
-      if (repUsarGps) {
-        try {
-          const coords = await obtenerCoordenadasGPS();
-          mapaUrl = coords.mapa;
-        } catch (e) {
-          console.warn('GPS no disponible:', e);
-        }
-      }
-
       let fotoBase64: string | null = null;
       if (repFoto) {
         fotoBase64 = await comprimirImagen(repFoto, 800, 0.7);
@@ -84,7 +73,7 @@ export const DriversView: React.FC<DriversViewProps> = ({
         fecha: `${fechaStr} ${horaStr}`,
         estado: 'Pendiente',
         foto: fotoBase64,
-        mapa: mapaUrl,
+        mapa: null,
         autor: defaultAuthor,
         timestamp: Date.now(),
       });
@@ -221,7 +210,7 @@ export const DriversView: React.FC<DriversViewProps> = ({
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                     Solicitud de Reparación (Taller)
                   </h3>
-                  <p className="text-xs text-slate-500">Anotar desperfecto mecánico no urgente</p>
+                  <p className="text-xs text-slate-500">Transmite  directo al jefe de taller</p>
                 </div>
               </div>
               {repSuccess && (
@@ -270,16 +259,6 @@ export const DriversView: React.FC<DriversViewProps> = ({
                 helpText="Puedes tomar una foto directamente con la cámara del celular o seleccionar de la galería."
               />
 
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-xs text-slate-700 font-medium">Adjuntar Ubicación GPS</span>
-                <input
-                  type="checkbox"
-                  checked={repUsarGps}
-                  onChange={(e) => setRepUsarGps(e.target.checked)}
-                  className="w-4 h-4 accent-blue-600"
-                />
-              </div>
-
               <button
                 type="submit"
                 disabled={isSubmittingRep}
@@ -310,7 +289,6 @@ export const DriversView: React.FC<DriversViewProps> = ({
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                     Informar Corte / Desvío
                   </h3>
-                  <p className="text-xs text-slate-500">Avisar calle cerrada para compañeros</p>
                 </div>
               </div>
               {corteSuccess && (
@@ -389,17 +367,17 @@ export const DriversView: React.FC<DriversViewProps> = ({
       </div>
 
       {/* Form 3: Subida de Planilla de Coches del Día */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+      <div className="bg-white border border-slate-300/80 rounded-2xl p-5 sm:p-6 shadow-md">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
               <CalendarPlus className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Actualizar Planilla Diaria de Turnos
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Colabore subiendo la planilla de turnos
               </h3>
-              <p className="text-xs text-slate-500">Fotografía la cartelera de turnos del día para el personal</p>
+              <p className="text-xs text-slate-500">Asignación de líneas para los conductores</p>
             </div>
           </div>
           {planillaSuccess && (

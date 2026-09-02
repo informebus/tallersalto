@@ -101,8 +101,8 @@ export const SchedulesView: React.FC<SchedulesViewProps> = ({
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 uppercase tracking-wider">
-                Horarios y Cartillas Oficiales
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-wide">
+                Todos los Horarios
               </h2>
               <p className="text-xs text-slate-500">
                 Líneas de la Intendencia de Salto y códigos de destinos

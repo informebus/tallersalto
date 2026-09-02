@@ -4,7 +4,7 @@ import { PhoneCall, Shield, Flame, Wrench, Siren, UserCheck } from 'lucide-react
 export const EmergencyDialer: React.FC = () => {
   const contacts = [
     {
-      name: 'Cuerpo Inspectivo',
+      name: 'Inspectores de tránsito',
       num: '47335090',
       badge: '4733 5090',
       desc: 'Tránsito e inspectores de línea',

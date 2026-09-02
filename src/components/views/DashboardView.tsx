@@ -131,7 +131,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
-              ¿Desperfecto o Emergencia en Ruta?
+              Rotura de la unidad en turno
             </h2>
             <p className="text-xs text-slate-500">
               Transmite ubicación GPS y foto directa al Taller y a la Guardia.
@@ -147,51 +147,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           REPORTAR COCHE ROTO
         </button>
       </motion.div>
-
-      {/* 4 Sleek Stat Cards (from Design HTML pattern) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-slate-500 text-xs font-semibold">Auxilios en Ruta</span>
-          <div className="flex items-end justify-between mt-2">
-            <span className={`text-2xl sm:text-3xl font-bold ${auxiliosList.length > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
-              {auxiliosList.length}
-            </span>
-            <span className={`text-xs font-semibold ${auxiliosList.length > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-              {auxiliosList.length > 0 ? '¡Atención!' : 'En orden'}
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-slate-500 text-xs font-semibold">Tareas Taller</span>
-          <div className="flex items-end justify-between mt-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
-              {pendingTareas.length}
-            </span>
-            <span className="text-blue-600 text-xs font-semibold">Pendientes</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-slate-500 text-xs font-semibold">Cortes / Desvíos</span>
-          <div className="flex items-end justify-between mt-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
-              {cortesList.length}
-            </span>
-            <span className="text-amber-600 text-xs font-semibold">Activos</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-slate-500 text-xs font-semibold">Comunicados</span>
-          <div className="flex items-end justify-between mt-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
-              {comunicadosList.length}
-            </span>
-            <span className="text-slate-500 text-xs font-medium">Mural</span>
-          </div>
-        </div>
-      </div>
 
       {/* Auxilios Activos Broadcast Section (if any) */}
       {auxiliosList.length > 0 && (
@@ -627,6 +582,51 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             className="w-full h-full border-0"
             loading="lazy"
           />
+        </div>
+      </div>
+
+      {/* 4 Sleek Stat Cards (Resumen de Métricas) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span className="text-slate-500 text-xs font-semibold">Auxilios en Ruta</span>
+          <div className="flex items-end justify-between mt-2">
+            <span className={`text-2xl sm:text-3xl font-bold ${auxiliosList.length > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+              {auxiliosList.length}
+            </span>
+            <span className={`text-xs font-semibold ${auxiliosList.length > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+              {auxiliosList.length > 0 ? '¡Atención!' : 'En orden'}
+            </span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span className="text-slate-500 text-xs font-semibold">Tareas Taller</span>
+          <div className="flex items-end justify-between mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
+              {pendingTareas.length}
+            </span>
+            <span className="text-blue-600 text-xs font-semibold">Pendientes</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span className="text-slate-500 text-xs font-semibold">Cortes / Desvíos</span>
+          <div className="flex items-end justify-between mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
+              {cortesList.length}
+            </span>
+            <span className="text-amber-600 text-xs font-semibold">Activos</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span className="text-slate-500 text-xs font-semibold">Comunicados</span>
+          <div className="flex items-end justify-between mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900">
+              {comunicadosList.length}
+            </span>
+            <span className="text-slate-500 text-xs font-medium">Mural</span>
+          </div>
         </div>
       </div>
     </div>

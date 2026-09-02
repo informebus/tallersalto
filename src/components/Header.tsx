@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { LogOut, ShieldAlert, AlertCircle } from 'lucide-react';
-import firebase from '../firebase';
+import React, { useState, useRef, useEffect } from 'react';
+import { LogOut } from 'lucide-react';
+import firebase, { db } from '../firebase';
 import { SaltoLogo } from './SaltoLogo';
 
 interface HeaderProps {
   user: firebase.User | null;
   onOpenMinigame: () => void;
   onOpenProfile: () => void;
-  onOpenBreakdown: () => void;
+  onOpenBreakdown?: () => void;
   onLogout: () => void;
 }
 
@@ -15,31 +15,52 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onOpenMinigame,
   onOpenProfile,
-  onOpenBreakdown,
   onLogout,
 }) => {
   const [tapCount, setTapCount] = useState(0);
+  const [profileData, setProfileData] = useState<{ nombre?: string; apellido?: string; foto?: string } | null>(null);
   const tapTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const handleLogoTap = () => {
-    setTapCount((prev) => {
-      const next = prev + 1;
-      if (tapTimer.current) clearTimeout(tapTimer.current);
+  useEffect(() => {
+    if (!user) {
+      setProfileData(null);
+      return;
+    }
 
-      if (next >= 3) {
-        onOpenMinigame();
-        return 0;
+    const ref = db.ref(`perfiles/${user.uid}`);
+    const handleValue = (snapshot: firebase.database.DataSnapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setProfileData(data);
       }
+    };
 
+    ref.on('value', handleValue);
+    return () => {
+      ref.off('value', handleValue);
+    };
+  }, [user]);
+
+  const handleLogoTap = () => {
+    if (tapTimer.current) {
+      clearTimeout(tapTimer.current);
+    }
+
+    const next = tapCount + 1;
+    if (next >= 3) {
+      setTapCount(0);
+      onOpenMinigame();
+    } else {
+      setTapCount(next);
       tapTimer.current = setTimeout(() => {
         setTapCount(0);
       }, 900);
-
-      return next;
-    });
+    }
   };
 
-  const username = user?.email ? user.email.split('@')[0] : 'Conductor';
+  const rawFullName = [profileData?.nombre, profileData?.apellido].filter(Boolean).join(' ').trim();
+  const displayName = rawFullName || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Conductor');
+  const initial = displayName.charAt(0).toUpperCase() || 'C';
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
@@ -65,17 +86,10 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 flex items-center gap-1.5">
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
                 División Ómnibus
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
-                  Salto
-                </span>
               </h1>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Gestión Operativa • App de Personal
-            </p>
           </div>
         </div>
 
@@ -83,22 +97,27 @@ export const Header: React.FC<HeaderProps> = ({
         {user ? (
           <div className="flex items-center gap-2">
             <button
-              onClick={onOpenBreakdown}
-              className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition active:scale-95 animate-pulse"
-              title="Reportar Auxilio Mecánico Inmediato"
-            >
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">SOS</span>
-            </button>
-
-            <button
               onClick={onOpenProfile}
-              className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-semibold transition"
+              className="flex items-center gap-2 py-1 px-2.5 sm:px-3 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition active:scale-95 text-left"
+              title="Ver mi perfil"
             >
-              <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold text-[10px]">
-                {username.charAt(0).toUpperCase()}
+              {profileData?.foto ? (
+                <img
+                  src={profileData.foto}
+                  alt={displayName}
+                  className="w-6 h-6 rounded-md object-cover border border-blue-300 shrink-0"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold text-[11px] shrink-0 shadow-xs">
+                  {initial}
+                </div>
+              )}
+              <div className="flex flex-col leading-tight min-w-0">
+                <span className="text-[10px] text-slate-500 font-medium leading-none">Bienvenido</span>
+                <span className="text-xs font-bold text-slate-800 truncate max-w-[120px] sm:max-w-[200px] leading-tight">
+                  {displayName}
+                </span>
               </div>
-              <span className="hidden sm:inline max-w-[90px] truncate">{username}</span>
             </button>
 
             <button
