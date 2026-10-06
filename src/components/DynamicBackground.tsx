@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+// Se han reemplazado los enlaces de Unsplash por las rutas locales de tus imágenes
 const BUS_WALLPAPERS = [
-  './principal.jpg',
-  './foto2.jpeg',
-  './1044.jpg',
-  './1062.webp',
-  './1046.jpg',
-  './him002.webp',
-  './micro.jpg',
-  './foto6.jpeg'
+  '/fondos/principal.jpg',
+  '/fondos/micro.jpg',
+  '/fondos/him002.webp',
+  '/fondos/foto6.jpeg',
+  '/fondos/foto2.jpeg',
+  '/fondos/1062.webp',
+  '/fondos/1046.jpg',
+  '/fondos/1044.jpg'
 ];
 
 export const DynamicBackground: React.FC = () => {
@@ -34,7 +35,7 @@ export const DynamicBackground: React.FC = () => {
         <motion.img
           key={BUS_WALLPAPERS[currentImageIndex]}
           src={BUS_WALLPAPERS[currentImageIndex]}
-          alt="Fondo dinámico de ómnibus"
+          alt="Fondo dinámico de ómnibus local"
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
@@ -43,9 +44,9 @@ export const DynamicBackground: React.FC = () => {
         />
       </AnimatePresence>
 
-      {/* Optimized Dark Contrast Overlay */}
-      <div className="absolute inset-0 bg-slate-950/30" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/10 to-slate-950/60" />
+      {/* Optimized Dark Contrast Overlay - Allows the bus images to be clearly visible while maintaining high UI readability */}
+      <div className="absolute inset-0 bg-slate-950/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-slate-950/90" />
     </div>
   );
 };
