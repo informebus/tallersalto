@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Se obtiene la ruta base dinámica para que funcione correctamente en GitHub Pages
-const basePath = import.meta.env.BASE_URL || '/';
+// Fuerza la ruta de GitHub Pages en producción y la raíz en desarrollo local
+const basePath = import.meta.env.MODE === 'production' ? '/tallersalto/' : '/';
 
 const BUS_WALLPAPERS = [
   `${basePath}fondos/principal.jpg`,
