@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Se han reemplazado los enlaces de Unsplash por las rutas locales de tus imágenes
+// Se obtiene la ruta base dinámica para que funcione correctamente en GitHub Pages
+const basePath = import.meta.env.BASE_URL || '/';
+
 const BUS_WALLPAPERS = [
-  '/fondos/principal.jpg',
-  '/fondos/micro.jpg',
-  '/fondos/him002.webp',
-  '/fondos/foto6.jpeg',
-  '/fondos/foto2.jpeg',
-  '/fondos/1062.webp',
-  '/fondos/1046.jpg',
-  '/fondos/1044.jpg'
+  `${basePath}fondos/principal.jpg`,
+  `${basePath}fondos/micro.jpg`,
+  `${basePath}fondos/him002.webp`,
+  `${basePath}fondos/foto6.jpeg`,
+  `${basePath}fondos/foto2.jpeg`,
+  `${basePath}fondos/1062.webp`,
+  `${basePath}fondos/1046.jpg`,
+  `${basePath}fondos/1044.jpg`
 ];
 
 export const DynamicBackground: React.FC = () => {
