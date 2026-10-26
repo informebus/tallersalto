@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Fuerza la ruta de GitHub Pages en producción y la raíz en desarrollo local
-const basePath = import.meta.env.MODE === 'production' ? '/tallersalto/' : '/';
+// Toma automáticamente la base '/tallersalto/' configurada en Vite
+const BASE = import.meta.env.BASE_URL || '/';
 
 const BUS_WALLPAPERS = [
-  `${basePath}fondos/principal.jpg`,
-  `${basePath}fondos/micro.jpg`,
-  `${basePath}fondos/him002.webp`,
-  `${basePath}fondos/foto6.jpeg`,
-  `${basePath}fondos/foto2.jpeg`,
-  `${basePath}fondos/1062.webp`,
-  `${basePath}fondos/1046.jpg`,
-  `${basePath}fondos/1044.jpg`
+  `${BASE}fondos/principal.jpg`,
+  `${BASE}fondos/foto2.jpeg`,
+  `${BASE}fondos/1044.jpg`,
+  `${BASE}fondos/1062.webp`,
+  `${BASE}fondos/1046.jpg`,
+  `${BASE}fondos/him002.webp`,
+  `${BASE}fondos/micro.jpg`,
+  `${BASE}fondos/foto6.jpeg`
 ];
 
 export const DynamicBackground: React.FC = () => {
@@ -21,7 +21,7 @@ export const DynamicBackground: React.FC = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % BUS_WALLPAPERS.length);
-    }, 10000); // Rota cada 10 segundos
+    }, 10000);
 
     return () => clearInterval(timer);
   }, []);
@@ -32,12 +32,11 @@ export const DynamicBackground: React.FC = () => {
       className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
       aria-hidden="true"
     >
-      {/* Dynamic Animated Images Slider */}
       <AnimatePresence mode="sync">
         <motion.img
           key={BUS_WALLPAPERS[currentImageIndex]}
           src={BUS_WALLPAPERS[currentImageIndex]}
-          alt="Fondo dinámico de ómnibus local"
+          alt="Fondo dinámico de ómnibus"
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
@@ -46,9 +45,8 @@ export const DynamicBackground: React.FC = () => {
         />
       </AnimatePresence>
 
-      {/* Optimized Dark Contrast Overlay - Allows the bus images to be clearly visible while maintaining high UI readability */}
-      <div className="absolute inset-0 bg-slate-950/70" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-slate-950/90" />
+      <div className="absolute inset-0 bg-slate-950/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/10 to-slate-950/60" />
     </div>
   );
 };
