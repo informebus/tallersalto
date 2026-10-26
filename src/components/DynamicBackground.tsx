@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Asegura que la ruta siempre incluya '/tallersalto/'
-const BASE = import.meta.env.BASE_URL?.includes('tallersalto')
-  ? import.meta.env.BASE_URL
-  : '/tallersalto/';
-
+// Rutas absolutas fijas para el entorno de GitHub Pages
 const BUS_WALLPAPERS = [
-  `${BASE}fondos/principal.jpg`,
-  `${BASE}fondos/foto2.jpeg`,
-  `${BASE}fondos/1044.jpg`,
-  `${BASE}fondos/1062.webp`,
-  `${BASE}fondos/1046.jpg`,
-  `${BASE}fondos/him002.webp`,
-  `${BASE}fondos/micro.jpg`,
-  `${BASE}fondos/foto6.jpeg`
+  '/tallersalto/fondos/principal.jpg',
+  '/tallersalto/fondos/foto2.jpeg',
+  '/tallersalto/fondos/1044.jpg',
+  '/tallersalto/fondos/1062.webp',
+  '/tallersalto/fondos/1046.jpg',
+  '/tallersalto/fondos/him002.webp',
+  '/tallersalto/fondos/micro.jpg',
+  '/tallersalto/fondos/foto6.jpeg'
 ];
 
 export const DynamicBackground: React.FC = () => {
