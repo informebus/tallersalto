@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Toma automáticamente la base '/tallersalto/' configurada en Vite
-const BASE = import.meta.env.BASE_URL || '/';
-
 const BUS_WALLPAPERS = [
-  `${BASE}fondos/principal.jpg`,
-  `${BASE}fondos/foto2.jpeg`,
-  `${BASE}fondos/1044.jpg`,
-  `${BASE}fondos/1062.webp`,
-  `${BASE}fondos/1046.jpg`,
-  `${BASE}fondos/him002.webp`,
-  `${BASE}fondos/micro.jpg`,
-  `${BASE}fondos/foto6.jpeg`
+  './fondos/principal.jpg',
+  './fondos/foto2.jpeg',
+  './fondos/1044.jpg',
+  './fondos/1062.webp',
+  './fondos/1046.jpg',
+  './fondos/him002.webp',
+  './fondos/micro.jpg',
+  './fondos/foto6.jpeg'
 ];
 
 export const DynamicBackground: React.FC = () => {
