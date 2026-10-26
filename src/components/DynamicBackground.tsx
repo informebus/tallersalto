@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+// Importamos las imágenes directamente para que Vite las procese y empaquete con la ruta correcta
+import imgPrincipal from '../../public/fondos/principal.jpg';
+import imgFoto2 from '../../public/fondos/foto2.jpeg';
+import img1044 from '../../public/fondos/1044.jpg';
+import img1062 from '../../public/fondos/1062.webp';
+import img1046 from '../../public/fondos/1046.jpg';
+import imgHim002 from '../../public/fondos/him002.webp';
+import imgMicro from '../../public/fondos/micro.jpg';
+import imgFoto6 from '../../public/fondos/foto6.jpeg';
+
 const BUS_WALLPAPERS = [
-  './fondos/principal.jpg',
-  './fondos/foto2.jpeg',
-  './fondos/1044.jpg',
-  './fondos/1062.webp',
-  './fondos/1046.jpg',
-  './fondos/him002.webp',
-  './fondos/micro.jpg',
-  './fondos/foto6.jpeg'
+  imgPrincipal,
+  imgFoto2,
+  img1044,
+  img1062,
+  img1046,
+  imgHim002,
+  imgMicro,
+  imgFoto6
 ];
 
 export const DynamicBackground: React.FC = () => {
