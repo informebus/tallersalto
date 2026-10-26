@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+// Obtiene automáticamente la subcarpeta del repositorio (/tallersalto/) en GitHub Pages
+const BASE = import.meta.env.BASE_URL || '/';
+
 const BUS_WALLPAPERS = [
-  './principal.jpg',
-  './foto2.jpeg',
-  './1044.jpg',
-  './1062.webp',
-  './1046.jpg',
-  './him002.webp',
-  './micro.jpg',
-  './foto6.jpeg'
+  `${BASE}fondos/principal.jpg`,
+  `${BASE}fondos/foto2.jpeg`,
+  `${BASE}fondos/1044.jpg`,
+  `${BASE}fondos/1062.webp`,
+  `${BASE}fondos/1046.jpg`,
+  `${BASE}fondos/him002.webp`,
+  `${BASE}fondos/micro.jpg`,
+  `${BASE}fondos/foto6.jpeg`
 ];
 
 export const DynamicBackground: React.FC = () => {
